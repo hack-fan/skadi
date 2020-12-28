@@ -2,7 +2,7 @@ package job
 
 import "github.com/hack-fan/serverfan/types"
 
-func (s *service) Pop(sid string) (*types.ServerJob, error) {
+func (s *service) Pop(aid string) (*types.JobBasic, error) {
 	return nil, nil
 }
 
