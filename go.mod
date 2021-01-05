@@ -1,3 +1,3 @@
-module github.com/hack-fan/serverfan
+module github.com/hack-fan/skadi
 
 go 1.15

@@ -1,6 +1,6 @@
 package job
 
-import "github.com/hack-fan/serverfan/types"
+import "github.com/hack-fan/skadi/types"
 
 type Service interface {
 	// Pop a job to server

@@ -1,4 +1,4 @@
-# Server Fan
+# Skadi
 
 > This project is under development and is not available yet.
 
