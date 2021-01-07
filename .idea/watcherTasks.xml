@@ -31,7 +31,7 @@
       <option name="description" />
       <option name="exitCodeBehavior" value="ERROR" />
       <option name="fileExtension" value="go" />
-      <option name="immediateSync" value="true" />
+      <option name="immediateSync" value="false" />
       <option name="name" value="goimports" />
       <option name="output" value="$FilePath$" />
       <option name="outputFilters">
@@ -39,7 +39,7 @@
       </option>
       <option name="outputFromStdout" value="false" />
       <option name="program" value="goimports" />
-      <option name="runOnExternalChanges" value="true" />
+      <option name="runOnExternalChanges" value="false" />
       <option name="scopeName" value="Project Files" />
       <option name="trackOnlyRoot" value="true" />
       <option name="workingDir" value="$ProjectFileDir$" />
