@@ -61,8 +61,7 @@ func (s *service) Succeed(id string, result string) {
 		"succeeded_at": time.Now(),
 	}).Error
 	if err != nil {
-		// TODO: notify back
-		s.log.Error(err)
+		s.notify(fmt.Errorf("save job %s succeeded status to db failed: %w", id, err))
 		return
 	}
 	// callback
@@ -77,8 +76,7 @@ func (s *service) Fail(id string, result string) {
 		"failed_at": time.Now(),
 	}).Error
 	if err != nil {
-		// TODO: notify back
-		s.log.Error(err)
+		s.notify(fmt.Errorf("save job %s failed status to db failed: %w", id, err))
 		return
 	}
 	// callback
@@ -87,6 +85,8 @@ func (s *service) Fail(id string, result string) {
 
 // store async store a job to db
 func (s *service) store(id string, input *types.JobInput) {
+	s.log.Infow("new job", "id", id,
+		"user", input.UserID, "agent", input.AgentID, "command", input.Message)
 	var job = types.Job{
 		ID:       id,
 		JobInput: *input,
@@ -94,19 +94,18 @@ func (s *service) store(id string, input *types.JobInput) {
 	}
 	err := s.db.Create(job).Error
 	if err != nil {
-		// TODO: notify back
-		s.log.Error(err)
+		s.notify(fmt.Errorf("store new job %s to db failed: %w", id, err))
 	}
 }
 
 func (s *service) setSent(id string) {
+	s.log.Infow("sent job to agent", "id", id)
 	err := s.db.Model(&types.Job{}).Where("id = ?", id).Updates(map[string]interface{}{
 		"status":  "sent",
 		"sent_at": time.Now(),
 	}).Error
 	if err != nil {
-		// TODO: notify back
-		s.log.Error(err)
+		s.notify(fmt.Errorf("set job %s status to sent failed: %w", id, err))
 	}
 }
 
@@ -122,7 +121,6 @@ func (s *service) callback(id string) {
 	}
 	_, err = s.rest.R().SetBody(job).Post(job.Callback)
 	if err != nil {
-		// TODO: notify back
-		s.log.Error(err)
+		s.notify(fmt.Errorf("job %s callback failed: %w", id, err))
 	}
 }

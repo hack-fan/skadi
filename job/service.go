@@ -20,11 +20,12 @@ type Service interface {
 }
 
 type service struct {
-	ctx  context.Context
-	log  *zap.SugaredLogger
-	kv   *redis.Client
-	db   *gorm.DB
-	rest *resty.Client
+	ctx    context.Context
+	log    *zap.SugaredLogger
+	kv     *redis.Client
+	db     *gorm.DB
+	rest   *resty.Client
+	notify types.NotifyFunc
 }
 
 // NewService create a job service instance
