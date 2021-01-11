@@ -28,8 +28,8 @@ type Job struct {
 	// agent returned, job log or other message
 	Result      string     `json:"result" gorm:"type:varchar(1024)"`
 	CreatedAt   time.Time  `json:"created_at" gorm:"index:by_user;index:by_agent"`
-	SentAt      *time.Time `json:"sent_at"`
-	ExpiredAt   *time.Time `json:"expired_at"`
-	SucceededAt *time.Time `json:"succeeded_at"`
-	FailedAt    *time.Time `json:"failed_at"`
+	SentAt      *time.Time `json:"sent_at,omitempty"`
+	ExpiredAt   *time.Time `json:"expired_at,omitempty"`
+	SucceededAt *time.Time `json:"succeeded_at,omitempty"`
+	FailedAt    *time.Time `json:"failed_at,omitempty"`
 }
