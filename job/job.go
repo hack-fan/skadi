@@ -2,6 +2,7 @@ package job
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/rs/xid"
 	"github.com/vmihailenco/msgpack/v5"
@@ -25,7 +26,7 @@ func (s *service) Pop(aid string) (*types.JobBasic, error) {
 		return nil, fmt.Errorf("msgpack unmarshal job basic error: %w", err)
 	}
 	// async change db status
-	go s.SetSent(job.ID)
+	go s.setSent(job.ID)
 
 	return job, nil
 }
@@ -47,13 +48,45 @@ func (s *service) Push(input *types.JobInput) error {
 		return fmt.Errorf("push input to agent queue error: %w", err)
 	}
 	// save to db
-	go s.Store(id, input)
+	go s.store(id, input)
 
 	return nil
 }
 
-// Store async store a job to db
-func (s *service) Store(id string, input *types.JobInput) {
+func (s *service) Succeed(id string, result string) {
+	// change db
+	err := s.db.Model(&types.Job{}).Where("id = ?", id).Updates(map[string]interface{}{
+		"status":       "succeeded",
+		"result":       result,
+		"succeeded_at": time.Now(),
+	}).Error
+	if err != nil {
+		// TODO: notify back
+		s.log.Error(err)
+		return
+	}
+	// callback
+	// TODO:
+}
+
+func (s *service) Fail(id string, result string) {
+	// change db
+	err := s.db.Model(&types.Job{}).Where("id = ?", id).Updates(map[string]interface{}{
+		"status":    "failed",
+		"result":    result,
+		"failed_at": time.Now(),
+	}).Error
+	if err != nil {
+		// TODO: notify back
+		s.log.Error(err)
+		return
+	}
+	// callback
+	// TODO:
+}
+
+// store async store a job to db
+func (s *service) store(id string, input *types.JobInput) {
 	var job = types.Job{
 		ID:       id,
 		JobInput: *input,
@@ -66,8 +99,11 @@ func (s *service) Store(id string, input *types.JobInput) {
 	}
 }
 
-func (s *service) SetSent(id string) {
-	err := s.db.Model(&types.Job{}).Where("id = ?", id).Update("status", "sent").Error
+func (s *service) setSent(id string) {
+	err := s.db.Model(&types.Job{}).Where("id = ?", id).Updates(map[string]interface{}{
+		"status":  "sent",
+		"sent_at": time.Now(),
+	}).Error
 	if err != nil {
 		// TODO: notify back
 		s.log.Error(err)

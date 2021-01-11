@@ -32,5 +32,4 @@ type Job struct {
 	ExpiredAt   *time.Time `json:"expired_at"`
 	SucceededAt *time.Time `json:"succeeded_at"`
 	FailedAt    *time.Time `json:"failed_at"`
-	CallbackAt  *time.Time `json:"callback_at"`
 }
