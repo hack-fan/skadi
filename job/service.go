@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/go-redis/redis/v8"
+	"github.com/go-resty/resty/v2"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 
@@ -19,10 +20,11 @@ type Service interface {
 }
 
 type service struct {
-	log *zap.SugaredLogger
-	kv  *redis.Client
-	db  *gorm.DB
-	ctx context.Context
+	ctx  context.Context
+	log  *zap.SugaredLogger
+	kv   *redis.Client
+	db   *gorm.DB
+	rest *resty.Client
 }
 
 // NewService create a job service instance

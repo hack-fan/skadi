@@ -66,7 +66,7 @@ func (s *service) Succeed(id string, result string) {
 		return
 	}
 	// callback
-	// TODO:
+	s.callback(id)
 }
 
 func (s *service) Fail(id string, result string) {
@@ -82,7 +82,7 @@ func (s *service) Fail(id string, result string) {
 		return
 	}
 	// callback
-	// TODO:
+	s.callback(id)
 }
 
 // store async store a job to db
@@ -104,6 +104,23 @@ func (s *service) setSent(id string) {
 		"status":  "sent",
 		"sent_at": time.Now(),
 	}).Error
+	if err != nil {
+		// TODO: notify back
+		s.log.Error(err)
+	}
+}
+
+func (s *service) callback(id string) {
+	var job = new(types.Job)
+	err := s.db.First(job, "id = ?", id).Error
+	if err != nil {
+		// TODO: notify back
+		s.log.Error(err)
+	}
+	if job.Callback == "" {
+		return
+	}
+	_, err = s.rest.R().SetBody(job).Post(job.Callback)
 	if err != nil {
 		// TODO: notify back
 		s.log.Error(err)

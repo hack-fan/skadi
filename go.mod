@@ -4,6 +4,7 @@ go 1.15
 
 require (
 	github.com/go-redis/redis/v8 v8.4.4
+	github.com/go-resty/resty/v2 v2.3.0
 	github.com/rs/xid v1.2.1
 	github.com/vmihailenco/msgpack/v5 v5.1.4
 	go.uber.org/multierr v1.6.0 // indirect
