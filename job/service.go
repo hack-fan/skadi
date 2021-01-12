@@ -11,15 +11,7 @@ import (
 	"github.com/hack-fan/skadi/types"
 )
 
-// Service has all JOB functions
-type Service interface {
-	// Pop a job to agent
-	Pop(aid string) (*types.JobBasic, error)
-	// Push a job by user
-	Push(job *types.JobInput) error
-}
-
-type service struct {
+type Service struct {
 	ctx    context.Context
 	log    *zap.SugaredLogger
 	kv     *redis.Client
@@ -29,8 +21,8 @@ type service struct {
 }
 
 // NewService create a job service instance
-func NewService() Service {
-	var s = &service{
+func NewService() *Service {
+	var s = &Service{
 		ctx: context.Background(),
 	}
 	return s

@@ -14,7 +14,7 @@ func agentQueueKey(aid string) string {
 	return fmt.Sprintf("aq:%s", aid)
 }
 
-func (s *service) Pop(aid string) (*types.JobBasic, error) {
+func (s *Service) Pop(aid string) (*types.JobBasic, error) {
 	// pop from redis
 	var job = new(types.JobBasic)
 	data, err := s.kv.RPop(s.ctx, agentQueueKey(aid)).Bytes()
@@ -31,7 +31,7 @@ func (s *service) Pop(aid string) (*types.JobBasic, error) {
 	return job, nil
 }
 
-func (s *service) Push(input *types.JobInput) error {
+func (s *Service) Push(input *types.JobInput) error {
 	// check agent status
 	// gen id
 	var id = xid.New().String()
@@ -53,7 +53,7 @@ func (s *service) Push(input *types.JobInput) error {
 	return nil
 }
 
-func (s *service) Succeed(id string, result string) {
+func (s *Service) Succeed(id string, result string) {
 	// change db
 	err := s.db.Model(&types.Job{}).Where("id = ?", id).Updates(map[string]interface{}{
 		"status":       "succeeded",
@@ -68,7 +68,7 @@ func (s *service) Succeed(id string, result string) {
 	s.callback(id)
 }
 
-func (s *service) Fail(id string, result string) {
+func (s *Service) Fail(id string, result string) {
 	// change db
 	err := s.db.Model(&types.Job{}).Where("id = ?", id).Updates(map[string]interface{}{
 		"status":    "failed",
@@ -84,7 +84,7 @@ func (s *service) Fail(id string, result string) {
 }
 
 // store async store a job to db
-func (s *service) store(id string, input *types.JobInput) {
+func (s *Service) store(id string, input *types.JobInput) {
 	s.log.Infow("new job", "id", id,
 		"user", input.UserID, "agent", input.AgentID, "command", input.Message)
 	var job = types.Job{
@@ -98,7 +98,7 @@ func (s *service) store(id string, input *types.JobInput) {
 	}
 }
 
-func (s *service) setSent(id string) {
+func (s *Service) setSent(id string) {
 	s.log.Infow("sent job to agent", "id", id)
 	err := s.db.Model(&types.Job{}).Where("id = ?", id).Updates(map[string]interface{}{
 		"status":  "sent",
@@ -109,7 +109,7 @@ func (s *service) setSent(id string) {
 	}
 }
 
-func (s *service) callback(id string) {
+func (s *Service) callback(id string) {
 	var job = new(types.Job)
 	err := s.db.First(job, "id = ?", id).Error
 	if err != nil {
