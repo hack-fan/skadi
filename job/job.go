@@ -83,6 +83,20 @@ func (s *Service) Fail(id string, result string) {
 	s.callback(id)
 }
 
+func (s *Service) Expire(id string) {
+	// change db
+	err := s.db.Model(&types.Job{}).Where("id = ?", id).Updates(map[string]interface{}{
+		"status":     "expired",
+		"expired_at": time.Now(),
+	}).Error
+	if err != nil {
+		s.notify(fmt.Errorf("save job %s expired status to db failed: %w", id, err))
+		return
+	}
+	// callback
+	s.callback(id)
+}
+
 // store async store a job to db
 func (s *Service) store(id string, input *types.JobInput) {
 	s.log.Infow("new job", "id", id,
