@@ -13,17 +13,28 @@ import (
 
 type Service struct {
 	ctx    context.Context
-	log    *zap.SugaredLogger
 	kv     *redis.Client
 	db     *gorm.DB
 	rest   *resty.Client
+	log    *zap.SugaredLogger
 	notify types.NotifyFunc
 }
 
 // NewService create a job service instance
-func NewService() *Service {
+func NewService(kv *redis.Client, db *gorm.DB, rest *resty.Client, log *zap.SugaredLogger) *Service {
 	var s = &Service{
-		ctx: context.Background(),
+		ctx:  context.Background(),
+		kv:   kv,
+		db:   db,
+		rest: rest,
+		log:  log,
+		notify: func(err error) {
+			log.Error(err)
+		},
 	}
 	return s
+}
+
+func (s *Service) SetNotifyFunc(notifyFunc types.NotifyFunc) {
+	s.notify = notifyFunc
 }
