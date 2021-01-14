@@ -8,14 +8,29 @@ import (
 	"github.com/hack-fan/x/xdb"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"go.uber.org/zap"
 
 	"github.com/hack-fan/skadi/job"
 )
 
 func main() {
+	var err error
 	// load config
 	var settings = new(Settings)
 	config.MustLoad(settings)
+
+	// logger
+	var logger *zap.Logger
+	if settings.Debug {
+		logger, err = zap.NewDevelopment()
+	} else {
+		logger, err = zap.NewProduction()
+	}
+	if err != nil {
+		panic(err)
+	}
+	defer logger.Sync() // nolint
+	var log = logger.Sugar()
 
 	// kv
 	var kv = redis.NewClient(&redis.Options{
@@ -28,7 +43,7 @@ func main() {
 	var db = xdb.New(settings.DB)
 
 	// job service
-	var js = job.NewService(kv, db, nil, nil)
+	var js = job.NewService(kv, db, nil, log)
 
 	// handler
 	var h = NewHandler(js)
