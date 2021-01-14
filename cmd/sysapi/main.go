@@ -75,6 +75,6 @@ func main() {
 	e.POST("/sys/jobs", h.PostJob)
 
 	// Start server
-	e.Logger.Fatal(e.Start(":1323"))
+	e.Logger.Fatal(e.Start(settings.ListenAddr))
 
 }
