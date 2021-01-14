@@ -6,7 +6,7 @@ require (
 	github.com/go-redis/redis/v8 v8.4.8
 	github.com/go-resty/resty/v2 v2.4.0
 	github.com/hack-fan/config v0.0.0-20200528030741-0a9be90586b6
-	github.com/hack-fan/x/xdb v0.0.0-20210113111403-faee574aebda
+	github.com/hack-fan/x/xdb v0.0.0-20210114091417-86c6ae1acaec
 	github.com/iancoleman/strcase v0.1.2 // indirect
 	github.com/labstack/echo/v4 v4.1.17
 	github.com/mattn/go-colorable v0.1.8 // indirect

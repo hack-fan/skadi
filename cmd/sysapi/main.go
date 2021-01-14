@@ -13,6 +13,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/hack-fan/skadi/job"
+	"github.com/hack-fan/skadi/types"
 )
 
 func main() {
@@ -42,8 +43,13 @@ func main() {
 	})
 
 	// db
-	// TODO: xdb.SetLogger(log)
+	xdb.SetLogger(log)
 	var db = xdb.New(settings.DB)
+	if settings.Debug {
+		db = db.Debug()
+	}
+	// auto create table
+	go db.AutoMigrate(&types.Job{}) // nolint
 
 	// http client
 	var rest = resty.New().SetRetryCount(3).
