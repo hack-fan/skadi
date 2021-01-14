@@ -101,7 +101,7 @@ func (s *Service) Expire(id string) {
 func (s *Service) store(id string, input *types.JobInput) {
 	s.log.Infow("new job", "id", id,
 		"user", input.UserID, "agent", input.AgentID, "command", input.Message)
-	var job = types.Job{
+	var job = &types.Job{
 		ID:       id,
 		JobInput: *input,
 		Status:   "queuing",

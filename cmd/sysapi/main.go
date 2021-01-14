@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/go-redis/redis/v8"
+	"github.com/go-resty/resty/v2"
 	"github.com/hack-fan/config"
 	"github.com/hack-fan/x/xdb"
 	"github.com/labstack/echo/v4"
@@ -40,10 +42,16 @@ func main() {
 	})
 
 	// db
+	// TODO: xdb.SetLogger(log)
 	var db = xdb.New(settings.DB)
 
+	// http client
+	var rest = resty.New().SetRetryCount(3).
+		SetRetryWaitTime(5 * time.Second).
+		SetRetryMaxWaitTime(60 * time.Second)
+
 	// job service
-	var js = job.NewService(kv, db, nil, log)
+	var js = job.NewService(kv, db, rest, log)
 
 	// handler
 	var h = NewHandler(js)
