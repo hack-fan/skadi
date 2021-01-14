@@ -32,6 +32,12 @@ func (h *Handler) PostJob(c echo.Context) error {
 	return c.NoContent(204)
 }
 
+func (h *Handler) PutJobExpire(c echo.Context) error {
+	id := c.Param("id")
+	h.js.Expire(id)
+	return c.NoContent(204)
+}
+
 // API status
 func getStatus(c echo.Context) error {
 	return c.NoContent(http.StatusNoContent)

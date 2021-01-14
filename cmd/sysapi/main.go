@@ -73,6 +73,7 @@ func main() {
 	e.GET("/", getStatus)
 
 	e.POST("/sys/jobs", h.PostJob)
+	e.PUT("/sys/jobs/:id/expire", h.PutJobExpire)
 
 	// Start server
 	e.Logger.Fatal(e.Start(settings.ListenAddr))
