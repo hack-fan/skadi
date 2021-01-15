@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/jinzhu/gorm"
@@ -30,6 +31,11 @@ func (s *Service) AuthValidator(key string, c echo.Context) (bool, error) {
 			return false, fmt.Errorf("err read key from db: %w", err)
 		}
 		aid = agent.ID
+		// save in redis
+		err = s.kv.Set(s.ctx, agentAuthKey(key), aid, 24*time.Hour).Err()
+		if err != nil {
+			go s.notify(err)
+		}
 	} else if err != nil {
 		return false, fmt.Errorf("err read key from redis: %w", err)
 	}
