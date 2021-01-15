@@ -14,6 +14,10 @@ func agentQueueKey(aid string) string {
 	return fmt.Sprintf("aq:%s", aid)
 }
 
+func waitingKey(id string) string {
+	return fmt.Sprintf("job:wait:%s", id)
+}
+
 func (s *Service) Pop(aid string) (*types.JobBasic, error) {
 	// pop from redis
 	var job = new(types.JobBasic)
@@ -24,6 +28,11 @@ func (s *Service) Pop(aid string) (*types.JobBasic, error) {
 	err = msgpack.Unmarshal(data, job)
 	if err != nil {
 		return nil, fmt.Errorf("msgpack unmarshal job basic error: %w", err)
+	}
+	// for expire count
+	err = s.kv.Set(s.ctx, waitingKey(job.ID), "", 10*time.Minute).Err()
+	if err != nil {
+		return nil, fmt.Errorf("save job to redis for waiting error: %w", err)
 	}
 	// async change db status
 	go s.setSent(job.ID)
