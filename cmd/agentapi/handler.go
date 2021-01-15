@@ -26,7 +26,11 @@ func (h *Handler) GetJob(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.JSON(200, resp)
+	if resp != nil {
+		return c.JSON(200, resp)
+	}
+	// no job found
+	return c.NoContent(204)
 }
 
 func (h *Handler) PutJobSucceed(c echo.Context) error {

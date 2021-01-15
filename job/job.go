@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/rs/xid"
 	"github.com/vmihailenco/msgpack/v5"
 
@@ -23,7 +24,9 @@ func (s *Service) Pop(aid string) (*types.JobBasic, error) {
 	var job = new(types.JobBasic)
 	data, err := s.kv.RPop(s.ctx, agentQueueKey(aid)).Bytes()
 	s.log.Debugw("pop", "data", string(data), "err", err)
-	if err != nil {
+	if err == redis.Nil {
+		return nil, nil
+	} else if err != nil {
 		return nil, fmt.Errorf("pop job from queue error: %w", err)
 	}
 	err = msgpack.Unmarshal(data, job)
