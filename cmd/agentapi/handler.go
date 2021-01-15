@@ -5,15 +5,15 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"github.com/hack-fan/skadi/job"
+	"github.com/hack-fan/skadi/service"
 	"github.com/hack-fan/skadi/types"
 )
 
 type Handler struct {
-	js *job.Service
+	js *service.Service
 }
 
-func NewHandler(js *job.Service) *Handler {
+func NewHandler(js *service.Service) *Handler {
 	return &Handler{
 		js: js,
 	}

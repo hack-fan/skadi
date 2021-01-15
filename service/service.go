@@ -1,4 +1,4 @@
-package job
+package service
 
 import (
 	"context"
@@ -20,8 +20,8 @@ type Service struct {
 	notify types.NotifyFunc
 }
 
-// NewService create a job service instance
-func NewService(kv *redis.Client, db *gorm.DB, rest *resty.Client, log *zap.SugaredLogger) *Service {
+// New create a job service instance
+func New(kv *redis.Client, db *gorm.DB, rest *resty.Client, log *zap.SugaredLogger) *Service {
 	var s = &Service{
 		ctx:  context.Background(),
 		kv:   kv,

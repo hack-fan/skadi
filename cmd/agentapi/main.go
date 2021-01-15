@@ -13,7 +13,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"go.uber.org/zap"
 
-	"github.com/hack-fan/skadi/job"
+	"github.com/hack-fan/skadi/service"
 	"github.com/hack-fan/skadi/types"
 )
 
@@ -58,7 +58,7 @@ func main() {
 		SetRetryMaxWaitTime(60 * time.Second)
 
 	// job service
-	var js = job.NewService(kv, db, rest, log)
+	var js = service.New(kv, db, rest, log)
 
 	// handler
 	var h = NewHandler(js)
