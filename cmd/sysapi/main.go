@@ -8,6 +8,7 @@ import (
 	"github.com/go-resty/resty/v2"
 	"github.com/hack-fan/config"
 	"github.com/hack-fan/x/xdb"
+	"github.com/hyacinthus/x/xerr"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"go.uber.org/zap"
@@ -64,7 +65,11 @@ func main() {
 
 	// Echo instance
 	e := echo.New()
-
+	if settings.Debug {
+		e.Debug = true
+	}
+	// Error handler
+	e.HTTPErrorHandler = xerr.ErrorHandler
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())

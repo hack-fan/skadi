@@ -6,8 +6,10 @@ require (
 	github.com/go-redis/redis/v8 v8.4.8
 	github.com/go-resty/resty/v2 v2.4.0
 	github.com/hack-fan/config v0.0.0-20200528030741-0a9be90586b6
-	github.com/hack-fan/x/xdb v0.0.0-20210114091417-86c6ae1acaec
-	github.com/iancoleman/strcase v0.1.2 // indirect
+	github.com/hack-fan/x/xdb v0.0.0-20210115030159-02c1647e0ae1
+	github.com/hack-fan/x/xerr v0.0.0-20210115030159-02c1647e0ae1 // indirect
+	github.com/hyacinthus/x v0.0.0-20200410031724-d6b644b4a6d5
+	github.com/iancoleman/strcase v0.1.3 // indirect
 	github.com/labstack/echo/v4 v4.1.17
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/rs/xid v1.2.1
