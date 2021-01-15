@@ -22,6 +22,7 @@ func (s *Service) Pop(aid string) (*types.JobBasic, error) {
 	// pop from redis
 	var job = new(types.JobBasic)
 	data, err := s.kv.RPop(s.ctx, agentQueueKey(aid)).Bytes()
+	s.log.Debugw("pop", "data", string(data), "err", err)
 	if err != nil {
 		return nil, fmt.Errorf("pop job from queue error: %w", err)
 	}

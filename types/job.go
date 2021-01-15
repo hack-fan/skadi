@@ -8,6 +8,7 @@ type JobBasic struct {
 	Message string `json:"message"`
 }
 
+// JobInput is input fields which upstream service passed
 type JobInput struct {
 	UserID  string `json:"user_id" gorm:"type:varchar(20);index:by_user"`
 	AgentID string `json:"agent_id" gorm:"type:varchar(20);index:by_agent"`
@@ -19,7 +20,7 @@ type JobInput struct {
 	Callback string `json:"callback" gorm:"type:varchar(255)"`
 }
 
-// Job will be saved
+// Job will be saved in db, it's a gorm mysql model
 type Job struct {
 	ID string `json:"id" gorm:"type:varchar(20);primary_key"`
 	JobInput
@@ -32,4 +33,10 @@ type Job struct {
 	ExpiredAt   *time.Time `json:"expired_at,omitempty"`
 	SucceededAt *time.Time `json:"succeeded_at,omitempty"`
 	FailedAt    *time.Time `json:"failed_at,omitempty"`
+}
+
+// JobResult is reported by agent
+type JobResult struct {
+	// agent returned, job log or other message
+	Result string `json:"result,omitempty"`
 }
