@@ -22,7 +22,7 @@ func NewHandler(js *service.Service) *Handler {
 func (h *Handler) GetJob(c echo.Context) error {
 	// TODO: auth
 	aid := c.Get("aid").(string)
-	resp, err := h.js.Pop(aid)
+	resp, err := h.js.JobPop(aid)
 	if err != nil {
 		return err
 	}
@@ -40,7 +40,7 @@ func (h *Handler) PutJobSucceed(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	h.js.Succeed(id, req.Result)
+	h.js.JobSucceed(id, req.Result)
 	return c.NoContent(204)
 }
 
@@ -51,7 +51,7 @@ func (h *Handler) PutJobFail(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	h.js.Fail(id, req.Result)
+	h.js.JobFail(id, req.Result)
 	return c.NoContent(204)
 }
 

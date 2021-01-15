@@ -15,11 +15,11 @@ func agentQueueKey(aid string) string {
 	return fmt.Sprintf("aq:%s", aid)
 }
 
-func waitingKey(id string) string {
+func jobWaitingKey(id string) string {
 	return fmt.Sprintf("job:wait:%s", id)
 }
 
-func (s *Service) Pop(aid string) (*types.JobBasic, error) {
+func (s *Service) JobPop(aid string) (*types.JobBasic, error) {
 	// pop from redis
 	var job = new(types.JobBasic)
 	data, err := s.kv.RPop(s.ctx, agentQueueKey(aid)).Bytes()
@@ -34,17 +34,17 @@ func (s *Service) Pop(aid string) (*types.JobBasic, error) {
 		return nil, fmt.Errorf("msgpack unmarshal job basic error: %w", err)
 	}
 	// for expire count
-	err = s.kv.Set(s.ctx, waitingKey(job.ID), "", 10*time.Minute).Err()
+	err = s.kv.Set(s.ctx, jobWaitingKey(job.ID), "", 10*time.Minute).Err()
 	if err != nil {
 		return nil, fmt.Errorf("save job to redis for waiting error: %w", err)
 	}
 	// async change db status
-	go s.setSent(job.ID)
+	go s.jobSent(job.ID)
 
 	return job, nil
 }
 
-func (s *Service) Push(input *types.JobInput) error {
+func (s *Service) JobPush(input *types.JobInput) error {
 	// check agent status
 	// gen id
 	var id = xid.New().String()
@@ -61,12 +61,12 @@ func (s *Service) Push(input *types.JobInput) error {
 		return fmt.Errorf("push input to agent queue error: %w", err)
 	}
 	// save to db
-	go s.store(id, input)
+	go s.jobStore(id, input)
 
 	return nil
 }
 
-func (s *Service) Succeed(id string, result string) {
+func (s *Service) JobSucceed(id string, result string) {
 	// change db
 	err := s.db.Model(&types.Job{}).Where("id = ?", id).Updates(map[string]interface{}{
 		"status":       "succeeded",
@@ -78,10 +78,10 @@ func (s *Service) Succeed(id string, result string) {
 		return
 	}
 	// callback
-	s.callback(id)
+	s.jobCallback(id)
 }
 
-func (s *Service) Fail(id string, result string) {
+func (s *Service) JobFail(id string, result string) {
 	// change db
 	err := s.db.Model(&types.Job{}).Where("id = ?", id).Updates(map[string]interface{}{
 		"status":    "failed",
@@ -93,10 +93,10 @@ func (s *Service) Fail(id string, result string) {
 		return
 	}
 	// callback
-	s.callback(id)
+	s.jobCallback(id)
 }
 
-func (s *Service) Expire(id string) {
+func (s *Service) JobExpire(id string) {
 	// change db
 	err := s.db.Model(&types.Job{}).Where("id = ?", id).Updates(map[string]interface{}{
 		"status":     "expired",
@@ -107,11 +107,11 @@ func (s *Service) Expire(id string) {
 		return
 	}
 	// callback
-	s.callback(id)
+	s.jobCallback(id)
 }
 
 // store async store a job to db
-func (s *Service) store(id string, input *types.JobInput) {
+func (s *Service) jobStore(id string, input *types.JobInput) {
 	s.log.Infow("new job", "id", id,
 		"user", input.UserID, "agent", input.AgentID, "command", input.Message)
 	var job = &types.Job{
@@ -125,7 +125,7 @@ func (s *Service) store(id string, input *types.JobInput) {
 	}
 }
 
-func (s *Service) setSent(id string) {
+func (s *Service) jobSent(id string) {
 	s.log.Infow("sent job to agent", "id", id)
 	err := s.db.Model(&types.Job{}).Where("id = ?", id).Updates(map[string]interface{}{
 		"status":  "sent",
@@ -136,7 +136,7 @@ func (s *Service) setSent(id string) {
 	}
 }
 
-func (s *Service) callback(id string) {
+func (s *Service) jobCallback(id string) {
 	var job = new(types.Job)
 	err := s.db.First(job, "id = ?", id).Error
 	if err != nil {

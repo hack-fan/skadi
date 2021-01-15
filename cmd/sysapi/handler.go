@@ -25,7 +25,7 @@ func (h *Handler) PostJob(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	err = h.js.Push(req)
+	err = h.js.JobPush(req)
 	if err != nil {
 		return err
 	}
@@ -34,7 +34,7 @@ func (h *Handler) PostJob(c echo.Context) error {
 
 func (h *Handler) PutJobExpire(c echo.Context) error {
 	id := c.Param("id")
-	h.js.Expire(id)
+	h.js.JobExpire(id)
 	return c.NoContent(204)
 }
 
