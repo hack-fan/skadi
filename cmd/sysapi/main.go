@@ -80,6 +80,8 @@ func main() {
 	e.POST("/sys/jobs", h.PostJob)
 	e.PUT("/sys/jobs/:id/expire", h.PutJobExpire)
 
+	e.POST("/sys/user/:uid/agent", h.PostAgent)
+
 	// Start server
 	e.Logger.Fatal(e.Start(settings.ListenAddr))
 

@@ -38,6 +38,15 @@ func (h *Handler) PutJobExpire(c echo.Context) error {
 	return c.NoContent(204)
 }
 
+func (h *Handler) PostAgent(c echo.Context) error {
+	uid := c.Param("uid")
+	agent, err := h.js.AgentAdd(uid)
+	if err != nil {
+		return err
+	}
+	return c.JSON(201, agent)
+}
+
 // API status
 func getStatus(c echo.Context) error {
 	return c.NoContent(http.StatusNoContent)
