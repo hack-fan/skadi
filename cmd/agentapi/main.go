@@ -57,11 +57,11 @@ func main() {
 		SetRetryWaitTime(5 * time.Second).
 		SetRetryMaxWaitTime(60 * time.Second)
 
-	// job service
-	var js = service.New(kv, db, rest, log)
+	// service
+	var s = service.New(kv, db, rest, log)
 
 	// handler
-	var h = NewHandler(js)
+	var h = NewHandler(s)
 
 	// Echo instance
 	e := echo.New()
@@ -73,7 +73,7 @@ func main() {
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	e.Use(middleware.KeyAuth(js.AuthValidator))
+	e.Use(middleware.KeyAuth(s.AuthValidator))
 
 	// Routes
 	e.GET("/", getStatus)

@@ -10,19 +10,19 @@ import (
 )
 
 type Handler struct {
-	js *service.Service
+	s *service.Service
 }
 
-func NewHandler(js *service.Service) *Handler {
+func NewHandler(s *service.Service) *Handler {
 	return &Handler{
-		js: js,
+		s: s,
 	}
 }
 
 func (h *Handler) GetJob(c echo.Context) error {
 	// TODO: auth
 	aid := c.Get("aid").(string)
-	resp, err := h.js.JobPop(aid)
+	resp, err := h.s.JobPop(aid)
 	if err != nil {
 		return err
 	}
@@ -40,7 +40,7 @@ func (h *Handler) PutJobSucceed(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	h.js.JobSucceed(id, req.Result)
+	h.s.JobSucceed(id, req.Result)
 	return c.NoContent(204)
 }
 
@@ -51,7 +51,7 @@ func (h *Handler) PutJobFail(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	h.js.JobFail(id, req.Result)
+	h.s.JobFail(id, req.Result)
 	return c.NoContent(204)
 }
 
