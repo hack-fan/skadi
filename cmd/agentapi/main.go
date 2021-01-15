@@ -73,6 +73,7 @@ func main() {
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	e.Use(middleware.KeyAuth(js.AuthValidator))
 
 	// Routes
 	e.GET("/", getStatus)

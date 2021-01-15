@@ -10,6 +10,7 @@ require (
 	github.com/hack-fan/x/xerr v0.0.0-20210115030159-02c1647e0ae1 // indirect
 	github.com/hyacinthus/x v0.0.0-20200410031724-d6b644b4a6d5
 	github.com/iancoleman/strcase v0.1.3 // indirect
+	github.com/jinzhu/gorm v1.9.12
 	github.com/labstack/echo/v4 v4.1.17
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/rs/xid v1.2.1
