@@ -2,11 +2,16 @@ package service
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/rs/xid"
 
 	"github.com/hack-fan/skadi/types"
 )
+
+func agentOnlineKey(aid string) string {
+	return "agent:online:" + aid
+}
 
 func (s *Service) AgentAdd(uid string) (*types.Agent, error) {
 	var agent = &types.Agent{
@@ -19,4 +24,11 @@ func (s *Service) AgentAdd(uid string) (*types.Agent, error) {
 		return nil, fmt.Errorf("create new agent to db failed: %w", err)
 	}
 	return agent, nil
+}
+
+func (s *Service) AgentOnline(aid string) {
+	err := s.kv.Set(s.ctx, agentOnlineKey(aid), time.Now().Unix(), 3*time.Minute).Err()
+	if err != nil {
+		go s.notify(fmt.Errorf("set agent %s online failed: %w", aid, err))
+	}
 }

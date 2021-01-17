@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/go-redis/redis/v8"
+	"github.com/hyacinthus/x/xerr"
 	"github.com/rs/xid"
 	"github.com/vmihailenco/msgpack/v5"
 
@@ -46,6 +47,13 @@ func (s *Service) JobPop(aid string) (*types.JobBasic, error) {
 
 func (s *Service) JobPush(input *types.JobInput) error {
 	// check agent status
+	exists, err := s.kv.Exists(s.ctx, agentOnlineKey(input.AgentID)).Result()
+	if err != nil {
+		return fmt.Errorf("msgpack marshal input error: %w", err)
+	}
+	if exists <= 0 {
+		return xerr.New(400, "InvalidAgent", "target agent is offline or invalid")
+	}
 	// gen id
 	var id = xid.New().String()
 	// save to kv

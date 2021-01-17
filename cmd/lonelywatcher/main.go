@@ -70,4 +70,5 @@ func main() {
 			go s.JobExpire(jid)
 		}
 	}
+	panic("watching redis key expired failed")
 }
