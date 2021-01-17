@@ -7,7 +7,6 @@ require (
 	github.com/go-resty/resty/v2 v2.4.0
 	github.com/hack-fan/config v0.0.0-20200528030741-0a9be90586b6
 	github.com/hack-fan/x/xdb v0.0.0-20210115030159-02c1647e0ae1
-	github.com/hack-fan/x/xerr v0.0.0-20210115030159-02c1647e0ae1 // indirect
 	github.com/hyacinthus/x v0.0.0-20200410031724-d6b644b4a6d5
 	github.com/iancoleman/strcase v0.1.3 // indirect
 	github.com/jinzhu/gorm v1.9.12

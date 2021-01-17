@@ -1,16 +1,15 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/go-resty/resty/v2"
 	"github.com/hack-fan/config"
 	"github.com/hack-fan/x/xdb"
-	"github.com/hyacinthus/x/xerr"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 	"go.uber.org/zap"
 
 	"github.com/hack-fan/skadi/service"
@@ -50,7 +49,7 @@ func main() {
 		db = db.Debug()
 	}
 	// auto create table
-	go db.AutoMigrate(&types.Job{}, &types.Agent{}) // nolint
+	go db.AutoMigrate(&types.Job{}) // nolint
 
 	// http client
 	var rest = resty.New().SetRetryCount(3).
@@ -58,31 +57,17 @@ func main() {
 		SetRetryMaxWaitTime(60 * time.Second)
 
 	// service
-	var js = service.New(kv, db, rest, log)
+	var s = service.New(kv, db, rest, log)
 
-	// handler
-	var h = NewHandler(js)
-
-	// Echo instance
-	e := echo.New()
-	if settings.Debug {
-		e.Debug = true
+	// watch redis expire events
+	ctx := context.Background()
+	pubsub := kv.Subscribe(ctx, "__keyevent@0__:expired")
+	log.Info("start watching redis key expired event...")
+	for msg := range pubsub.Channel() {
+		log.Debugw("redis key expired", "key", msg.Payload)
+		if strings.HasPrefix(msg.Payload, "job:wait:") {
+			jid := strings.TrimPrefix(msg.Payload, "job:wait:")
+			go s.JobExpire(jid)
+		}
 	}
-	// Error handler
-	e.HTTPErrorHandler = xerr.ErrorHandler
-	// Middleware
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
-
-	// Routes
-	e.GET("/", getStatus)
-
-	e.POST("/sys/jobs", h.PostJob)
-	e.PUT("/sys/jobs/:id/expire", h.PutJobExpire)
-
-	e.POST("/sys/users/:uid/agents", h.PostAgent)
-
-	// Start server
-	e.Logger.Fatal(e.Start(settings.ListenAddr))
-
 }

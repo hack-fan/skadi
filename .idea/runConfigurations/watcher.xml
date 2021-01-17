@@ -1,0 +1,23 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="watcher" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="skadi" />
+    <working_directory value="$PROJECT_DIR$/cmd/lonelywatcher" />
+    <go_parameters value="-i" />
+    <EXTENSION ID="net.ashald.envfile">
+      <option name="IS_ENABLED" value="true" />
+      <option name="IS_SUBST" value="false" />
+      <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+      <option name="IS_IGNORE_MISSING_FILES" value="false" />
+      <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+      <ENTRIES>
+        <ENTRY IS_ENABLED="true" PARSER="runconfig" />
+        <ENTRY IS_ENABLED="true" PARSER="env" PATH="cmd/lonelywatcher/dev.env" />
+      </ENTRIES>
+    </EXTENSION>
+    <kind value="PACKAGE" />
+    <filePath value="$PROJECT_DIR$" />
+    <package value="github.com/hack-fan/skadi/cmd/lonelywatcher" />
+    <directory value="$PROJECT_DIR$" />
+    <method v="2" />
+  </configuration>
+</component>
