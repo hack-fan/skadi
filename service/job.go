@@ -20,31 +20,36 @@ func jobWaitingKey(id string) string {
 	return fmt.Sprintf("job:wait:%s", id)
 }
 
-func (s *Service) JobPop(aid string) (*types.JobBasic, error) {
+// call by agent, so will not return errors, notify the error to admin.
+func (s *Service) JobPop(aid string) *types.JobBasic {
 	// pop from redis
 	var job = new(types.JobBasic)
 	data, err := s.kv.RPop(s.ctx, agentQueueKey(aid)).Bytes()
 	s.log.Debugw("pop", "data", string(data), "err", err)
 	if err == redis.Nil {
-		return nil, nil
+		return nil
 	} else if err != nil {
-		return nil, fmt.Errorf("pop job from queue error: %w", err)
+		go s.notify(fmt.Errorf("pop job from queue error: %w", err))
+		return nil
 	}
 	err = msgpack.Unmarshal(data, job)
 	if err != nil {
-		return nil, fmt.Errorf("msgpack unmarshal job basic error: %w", err)
+		s.notify(fmt.Errorf("msgpack unmarshal job basic error: %w", err))
+		return nil
 	}
 	// for expire count
 	err = s.kv.Set(s.ctx, jobWaitingKey(job.ID), "", 10*time.Minute).Err()
 	if err != nil {
-		return nil, fmt.Errorf("save job to redis for waiting error: %w", err)
+		s.notify(fmt.Errorf("save job to redis for waiting error: %w", err))
+		return nil
 	}
 	// async change db status
 	go s.jobSent(job.ID)
 
-	return job, nil
+	return job
 }
 
+// call by upstream system
 func (s *Service) JobPush(input *types.JobInput) error {
 	// check agent status
 	exists, err := s.kv.Exists(s.ctx, agentOnlineKey(input.AgentID)).Result()

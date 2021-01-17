@@ -24,10 +24,7 @@ func (h *Handler) GetJob(c echo.Context) error {
 	// async set agent online
 	go h.s.AgentOnline(aid)
 	// pop a job
-	resp, err := h.s.JobPop(aid)
-	if err != nil {
-		return err
-	}
+	resp := h.s.JobPop(aid)
 	if resp != nil {
 		return c.JSON(200, resp)
 	}
