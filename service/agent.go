@@ -26,9 +26,15 @@ func (s *Service) AgentAdd(uid string) (*types.Agent, error) {
 	return agent, nil
 }
 
+// call after every agent job pull
 func (s *Service) AgentOnline(aid string) {
 	err := s.kv.Set(s.ctx, agentOnlineKey(aid), time.Now().Unix(), 3*time.Minute).Err()
 	if err != nil {
 		go s.notify(fmt.Errorf("set agent %s online failed: %w", aid, err))
 	}
+}
+
+// call after the watcher found agent status switch to offline
+func (s *Service) AgentOffline(aid string) {
+	// clear the agent queue, set all job as expired
 }

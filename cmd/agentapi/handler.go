@@ -20,8 +20,10 @@ func NewHandler(s *service.Service) *Handler {
 }
 
 func (h *Handler) GetJob(c echo.Context) error {
-	// TODO: auth
 	aid := c.Get("aid").(string)
+	// async set agent online
+	go h.s.AgentOnline(aid)
+	// pop a job
 	resp, err := h.s.JobPop(aid)
 	if err != nil {
 		return err
