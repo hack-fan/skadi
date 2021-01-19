@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/rs/xid"
+	"github.com/vmihailenco/msgpack/v5"
 
 	"github.com/hack-fan/skadi/types"
 )
@@ -37,4 +39,21 @@ func (s *Service) AgentOnline(aid string) {
 // call after the watcher found agent status switch to offline
 func (s *Service) AgentOffline(aid string) {
 	// clear the agent queue, set all job as expired
+	for {
+		var job = new(types.JobBasic)
+		data, err := s.kv.RPop(s.ctx, agentQueueKey(aid)).Bytes()
+		s.log.Debugw("pop", "data", string(data), "err", err)
+		if err == redis.Nil {
+			break
+		} else if err != nil {
+			go s.notify(fmt.Errorf("pop job from queue error: %w", err))
+			return
+		}
+		err = msgpack.Unmarshal(data, job)
+		if err != nil {
+			s.notify(fmt.Errorf("msgpack unmarshal job basic error: %w", err))
+			return
+		}
+		s.JobExpire(job.ID)
+	}
 }

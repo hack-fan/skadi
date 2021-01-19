@@ -64,10 +64,14 @@ func main() {
 	pubsub := kv.Subscribe(ctx, "__keyevent@0__:expired")
 	log.Info("start watching redis key expired event...")
 	for msg := range pubsub.Channel() {
-		log.Debugw("redis key expired", "key", msg.Payload)
-		if strings.HasPrefix(msg.Payload, "job:wait:") {
-			jid := strings.TrimPrefix(msg.Payload, "job:wait:")
+		key := msg.Payload
+		log.Debugw("redis key expired", "key", key)
+		if strings.HasPrefix(key, "job:wait:") {
+			jid := strings.TrimPrefix(key, "job:wait:")
 			go s.JobExpire(jid)
+		} else if strings.HasPrefix(key, "agent:online:") {
+			aid := strings.TrimPrefix(key, "agent:online:")
+			go s.AgentOffline(aid)
 		}
 	}
 	panic("watching redis key expired failed")
