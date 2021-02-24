@@ -73,16 +73,17 @@ func main() {
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	e.Use(middleware.KeyAuth(s.AuthValidator))
+
+	// Auth group
+	var a = e.Group("", middleware.KeyAuth(s.AuthValidator))
 
 	// Routes
-	e.GET("/", getStatus)
+	e.GET("/status", getStatus)
 
-	e.GET("/agent/job", h.GetJob)
-	e.PUT("/agent/jobs/:id/succeed", h.PutJobSucceed)
-	e.PUT("/agent/jobs/:id/fail", h.PutJobFail)
+	a.GET("/agent/job", h.GetJob)
+	a.PUT("/agent/jobs/:id/succeed", h.PutJobSucceed)
+	a.PUT("/agent/jobs/:id/fail", h.PutJobFail)
 
 	// Start server
 	e.Logger.Fatal(e.Start(settings.ListenAddr))
-
 }
