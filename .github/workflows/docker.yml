@@ -23,7 +23,7 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
       -
         name: Build and push agent api
-        id: docker_build
+        id: api_build
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -32,7 +32,7 @@ jobs:
           tags: hackfan/skadi-agent-api:latest
       -
         name: Build and push watcher
-        id: docker_build
+        id: watcher_build
         uses: docker/build-push-action@v2
         with:
           context: .
