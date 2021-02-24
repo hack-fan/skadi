@@ -22,14 +22,21 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_NAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
       -
-        name: Build and push
+        name: Build and push agent api
         id: docker_build
         uses: docker/build-push-action@v2
         with:
-          context: .
-          file: cmd/agentapi/Dockerfile
+          file: {context}/cmd/agentapi/Dockerfile
           push: true
           tags: hackfan/skadi-agent-api:latest
+      -
+        name: Build and push watcher
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          file: {context}/cmd/lonelywatcher/Dockerfile
+          push: true
+          tags: hackfan/skadi-watcher:latest
       -
         name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
