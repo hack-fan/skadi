@@ -26,7 +26,8 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v2
         with:
-          file: {context}/cmd/agentapi/Dockerfile
+          context: .
+          file: ./cmd/agentapi/Dockerfile
           push: true
           tags: hackfan/skadi-agent-api:latest
       -
@@ -34,7 +35,8 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v2
         with:
-          file: {context}/cmd/lonelywatcher/Dockerfile
+          context: .
+          file: ./cmd/lonelywatcher/Dockerfile
           push: true
           tags: hackfan/skadi-watcher:latest
       -

@@ -50,7 +50,7 @@ func main() {
 		db = db.Debug()
 	}
 	// auto create table
-	go db.AutoMigrate(&types.Job{}) // nolint
+	go db.AutoMigrate(&types.Job{}, &types.Agent{}) // nolint
 
 	// http client
 	var rest = resty.New().SetRetryCount(3).
