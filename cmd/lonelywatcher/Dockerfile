@@ -8,7 +8,7 @@ RUN go build -o watcher ./cmd/lonelywatcher
 
 
 # target image
-FROM debian:slim
+FROM debian:10-slim
 
 # Install curl and install/updates certificates
 RUN apt-get update \
