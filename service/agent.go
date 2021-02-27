@@ -29,8 +29,20 @@ func (s *Service) AgentAdd(uid string) (*types.Agent, error) {
 }
 
 // call after every agent job pull
-func (s *Service) AgentOnline(aid string) {
-	err := s.kv.Set(s.ctx, agentOnlineKey(aid), time.Now().Unix(), 3*time.Minute).Err()
+func (s *Service) AgentOnline(aid, ip string) {
+	// save ip after first request
+	cnt, err := s.kv.Exists(s.ctx, agentOnlineKey(aid)).Result()
+	if err != nil {
+		go s.notify(fmt.Errorf("check agent %s online failed: %w", aid, err))
+	}
+	if cnt == 0 {
+		err = s.db.Model(&types.Agent{}).Where("id = ?", aid).Update("ip", ip).Error
+		if err != nil {
+			go s.notify(fmt.Errorf("save agent %s ip to db failed: %w", aid, err))
+		}
+	}
+	// refresh online status
+	err = s.kv.Set(s.ctx, agentOnlineKey(aid), time.Now().Unix(), 3*time.Minute).Err()
 	if err != nil {
 		go s.notify(fmt.Errorf("set agent %s online failed: %w", aid, err))
 	}
@@ -55,5 +67,10 @@ func (s *Service) AgentOffline(aid string) {
 			return
 		}
 		s.JobExpire(job.ID)
+	}
+	// change agent activity log
+	err := s.db.Model(&types.Agent{}).Where("id = ?", aid).Update("activated_at", time.Now()).Error
+	if err != nil {
+		go s.notify(fmt.Errorf("save agent %s activity to db failed: %w", aid, err))
 	}
 }
