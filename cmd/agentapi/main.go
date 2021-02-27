@@ -8,7 +8,7 @@ import (
 	"github.com/go-resty/resty/v2"
 	"github.com/hack-fan/config"
 	"github.com/hack-fan/x/xdb"
-	"github.com/hyacinthus/x/xerr"
+	"github.com/hack-fan/x/xerr"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"go.uber.org/zap"

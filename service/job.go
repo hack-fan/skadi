@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/go-redis/redis/v8"
-	"github.com/hyacinthus/x/xerr"
+	"github.com/hack-fan/x/xerr"
 	"github.com/rs/xid"
 	"github.com/vmihailenco/msgpack/v5"
 
