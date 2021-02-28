@@ -82,3 +82,28 @@ func (s *Service) IsAgentOnline(aid string) bool {
 	}
 	return false
 }
+
+func (s *Service) AgentSecret(aid string) (string, error) {
+	var agent = new(types.Agent)
+	err := s.db.Select("secret").First(agent, "id = ?", aid).Error
+	if err != nil {
+		return "", fmt.Errorf("get agent secret from db failed: %w", err)
+	}
+	return agent.Secret, nil
+}
+
+func (s *Service) AgentSecretReset(aid string) (string, error) {
+	// clear old in redis
+	old, err := s.AgentSecret(aid)
+	if err != nil {
+		return "", err
+	}
+	s.clearAgentAuthCache(old)
+	// new secret
+	secret := xid.New().String()
+	err = s.db.Model(&types.Agent{}).Update("secret", secret).Where("id = ?", aid).Error
+	if err != nil {
+		return "", fmt.Errorf("update agent secret failed: %w", err)
+	}
+	return secret, nil
+}
