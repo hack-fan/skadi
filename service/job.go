@@ -82,7 +82,7 @@ func (s *Service) JobPush(input *types.JobInput) error {
 func (s *Service) JobSucceed(id string, result string) {
 	// change db
 	err := s.db.Model(&types.Job{}).Where("id = ?", id).Updates(map[string]interface{}{
-		"status":       "succeeded",
+		"status":       types.JobStatusSucceeded,
 		"result":       result,
 		"succeeded_at": time.Now(),
 	}).Error
@@ -97,7 +97,7 @@ func (s *Service) JobSucceed(id string, result string) {
 func (s *Service) JobFail(id string, result string) {
 	// change db
 	err := s.db.Model(&types.Job{}).Where("id = ?", id).Updates(map[string]interface{}{
-		"status":    "failed",
+		"status":    types.JobStatusFailed,
 		"result":    result,
 		"failed_at": time.Now(),
 	}).Error
@@ -112,7 +112,7 @@ func (s *Service) JobFail(id string, result string) {
 func (s *Service) JobExpire(id string) {
 	// change db
 	err := s.db.Model(&types.Job{}).Where("id = ?", id).Updates(map[string]interface{}{
-		"status":     "expired",
+		"status":     types.JobStatusExpired,
 		"expired_at": time.Now(),
 	}).Error
 	if err != nil {
@@ -130,7 +130,7 @@ func (s *Service) jobStore(id string, input *types.JobInput) {
 	var job = &types.Job{
 		ID:       id,
 		JobInput: *input,
-		Status:   "queuing",
+		Status:   types.JobStatusQueuing,
 	}
 	err := s.db.Create(job).Error
 	if err != nil {
@@ -141,7 +141,7 @@ func (s *Service) jobStore(id string, input *types.JobInput) {
 func (s *Service) jobSent(id string) {
 	s.log.Infow("sent job to agent", "id", id)
 	err := s.db.Model(&types.Job{}).Where("id = ?", id).Updates(map[string]interface{}{
-		"status":  "sent",
+		"status":  types.JobStatusSent,
 		"sent_at": time.Now(),
 	}).Error
 	if err != nil {

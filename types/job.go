@@ -2,6 +2,14 @@ package types
 
 import "time"
 
+const (
+	JobStatusQueuing   = "queuing"
+	JobStatusSent      = "sent"
+	JobStatusExpired   = "expired"
+	JobStatusSucceeded = "succeeded"
+	JobStatusFailed    = "failed"
+)
+
 // JobBasic will be pulled by agent
 type JobBasic struct {
 	ID      string `json:"id"`
