@@ -123,6 +123,21 @@ func (s *Service) JobExpire(id string) {
 	s.jobCallback(id)
 }
 
+// Agent offline will cancel all job in queue
+func (s *Service) JobCancel(id string) {
+	// change db
+	err := s.db.Model(&types.Job{}).Where("id = ?", id).Updates(map[string]interface{}{
+		"status":      types.JobStatusCanceled,
+		"canceled_at": time.Now(),
+	}).Error
+	if err != nil {
+		s.notify(fmt.Errorf("save job %s expired status to db failed: %w", id, err))
+		return
+	}
+	// callback
+	s.jobCallback(id)
+}
+
 // store async store a job to db
 func (s *Service) jobStore(id string, input *types.JobInput) {
 	s.log.Infow("new job", "id", id,

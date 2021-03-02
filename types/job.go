@@ -4,6 +4,7 @@ import "time"
 
 const (
 	JobStatusQueuing   = "queuing"
+	JobStatusCanceled  = "canceled"
 	JobStatusSent      = "sent"
 	JobStatusExpired   = "expired"
 	JobStatusSucceeded = "succeeded"
@@ -32,12 +33,13 @@ type JobInput struct {
 type Job struct {
 	ID string `json:"id" gorm:"type:varchar(20);primary_key"`
 	JobInput
-	// queuing/sent/expired/succeeded/failed
+	// queuing/canceled/sent/expired/succeeded/failed
 	Status string `json:"status" gorm:"type:varchar(10)"`
 	// agent returned, job log or other message
 	Result      string     `json:"result" gorm:"type:varchar(1024)"`
 	CreatedAt   time.Time  `json:"created_at" gorm:"index:by_user;index:by_agent"`
 	SentAt      *time.Time `json:"sent_at,omitempty"`
+	CanceledAt  *time.Time `json:"canceled_at,omitempty"`
 	ExpiredAt   *time.Time `json:"expired_at,omitempty"`
 	SucceededAt *time.Time `json:"succeeded_at,omitempty"`
 	FailedAt    *time.Time `json:"failed_at,omitempty"`
