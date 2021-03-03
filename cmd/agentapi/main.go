@@ -8,6 +8,7 @@ import (
 	"github.com/go-resty/resty/v2"
 	"github.com/hack-fan/config"
 	"github.com/hack-fan/x/xdb"
+	"github.com/hack-fan/x/xecho"
 	"github.com/hack-fan/x/xerr"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -71,7 +72,7 @@ func main() {
 	// Error handler
 	e.HTTPErrorHandler = xerr.ErrorHandler
 	// Middleware
-	e.Use(middleware.Logger())
+	e.Use(xecho.LoggerMid())
 	e.Use(middleware.Recover())
 
 	// Auth group
