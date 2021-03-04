@@ -90,6 +90,11 @@ func (s *Service) JobSucceed(id string, result string) {
 		s.notify(fmt.Errorf("save job %s succeeded status to db failed: %w", id, err))
 		return
 	}
+	// rm waiting key
+	err = s.kv.Del(s.ctx, jobWaitingKey(id)).Err()
+	if err != nil {
+		s.notify(fmt.Errorf("delete job %s waiting key after succeeded error: %w", id, err))
+	}
 	// callback
 	s.jobCallback(id)
 }
@@ -104,6 +109,11 @@ func (s *Service) JobFail(id string, result string) {
 	if err != nil {
 		s.notify(fmt.Errorf("save job %s failed status to db failed: %w", id, err))
 		return
+	}
+	// rm waiting key
+	err = s.kv.Del(s.ctx, jobWaitingKey(id)).Err()
+	if err != nil {
+		s.notify(fmt.Errorf("delete job %s waiting key after failed error: %w", id, err))
 	}
 	// callback
 	s.jobCallback(id)
