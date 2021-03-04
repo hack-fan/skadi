@@ -162,6 +162,8 @@ func (s *Service) jobSent(id string) {
 	if err != nil {
 		s.notify(fmt.Errorf("set job %s status to sent failed: %w", id, err))
 	}
+	// callback
+	s.jobCallback(id)
 }
 
 func (s *Service) jobCallback(id string) {
