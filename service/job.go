@@ -180,8 +180,8 @@ func (s *Service) jobCallback(id string) {
 	var job = new(types.Job)
 	err := s.db.First(job, "id = ?", id).Error
 	if err != nil {
-		// TODO: notify back
-		s.log.Error(err)
+		s.notify(fmt.Errorf("job %s callback fetch job from db failed: %w", id, err))
+		return
 	}
 	if job.Callback == "" {
 		return
