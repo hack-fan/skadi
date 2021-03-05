@@ -1,6 +1,10 @@
 package types
 
-import "time"
+import (
+	"time"
+
+	"github.com/hack-fan/x/xtype"
+)
 
 const (
 	JobStatusQueuing   = "queuing"
@@ -10,6 +14,8 @@ const (
 	JobStatusSucceeded = "succeeded"
 	JobStatusFailed    = "failed"
 )
+
+var RESERVED = xtype.Strings{"agent", "status", "help", "delay", "group"}
 
 // JobBasic will be pulled by agent
 type JobBasic struct {

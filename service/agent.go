@@ -1,12 +1,15 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
 	"github.com/go-redis/redis/v8"
+	"github.com/hack-fan/x/xerr"
 	"github.com/rs/xid"
 	"github.com/vmihailenco/msgpack/v5"
+	"gorm.io/gorm"
 
 	"github.com/hack-fan/skadi/types"
 )
@@ -15,10 +18,25 @@ func agentOnlineKey(aid string) string {
 	return "agent:online:" + aid
 }
 
-func (s *Service) AgentAdd(uid string) (*types.Agent, error) {
+// AgentAdd create a server side agent
+func (s *Service) AgentAdd(uid string, info *types.AgentBasic) (*types.Agent, error) {
+	// check
+	if info == nil || info.Name == "" {
+		return nil, xerr.New(400, "MissingName", "agent name is required")
+	}
+	if types.RESERVED.Contains(info.Name) || types.RESERVED.Contains(info.Alias) {
+		return nil, xerr.New(400, "InvalidName", "the name is reserved by system")
+	}
+	if info.Alias != "" && types.RESERVED.Contains(info.Alias) {
+		return nil, xerr.New(400, "InvalidAlias", "the alias is reserved by system")
+	}
+	// create
 	var agent = &types.Agent{
 		ID:     xid.New().String(),
 		UserID: uid,
+		Name:   info.Name,
+		Alias:  info.Alias,
+		Remark: info.Remark,
 		Secret: xid.New().String(),
 	}
 	err := s.db.Create(agent).Error
@@ -26,6 +44,34 @@ func (s *Service) AgentAdd(uid string) (*types.Agent, error) {
 		return nil, fmt.Errorf("create new agent to db failed: %w", err)
 	}
 	return agent, nil
+}
+
+// UserAgents return user's all agent
+func (s *Service) UserAgents(uid string) ([]*types.Agent, error) {
+	var agents = make([]*types.Agent, 0)
+	err := s.db.Find(&agents, "user_id = ?", uid).Error
+	if err != nil {
+		return nil, fmt.Errorf("select agent from db error: %w", err)
+	}
+	return agents, nil
+}
+
+func (s *Service) FindUserAgentByName(uid, name string) (id string, ok bool, err error) {
+	var agent = new(types.Agent)
+	err = s.db.Select("id").First(agent, "user_id = ? and name = ?", uid, name).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		err := s.db.Select("id").First(agent, "user_id = ? and alias = ?", uid, name).Error
+		// name and alias both not found
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return "", false, nil
+		} else if err != nil {
+			return "", false, fmt.Errorf("find user agent db error: %w", err)
+		}
+		return agent.ID, true, nil
+	} else if err != nil {
+		return "", false, fmt.Errorf("find user agent db error:%w", err)
+	}
+	return agent.ID, true, nil
 }
 
 // call after every agent job pull

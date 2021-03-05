@@ -40,7 +40,12 @@ func (h *Handler) PutJobExpire(c echo.Context) error {
 
 func (h *Handler) PostAgent(c echo.Context) error {
 	uid := c.Param("uid")
-	agent, err := h.js.AgentAdd(uid)
+	basic := new(types.AgentBasic)
+	err := c.Bind(basic)
+	if err != nil {
+		return err
+	}
+	agent, err := h.js.AgentAdd(uid, basic)
 	if err != nil {
 		return err
 	}
