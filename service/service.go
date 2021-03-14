@@ -18,6 +18,7 @@ type Service struct {
 	rest   *resty.Client
 	log    *zap.SugaredLogger
 	notify types.NotifyFunc
+	event  types.EventCenter
 }
 
 // New create a job service instance
@@ -37,4 +38,9 @@ func New(kv *redis.Client, db *gorm.DB, rest *resty.Client, log *zap.SugaredLogg
 
 func (s *Service) SetNotifyFunc(notifyFunc types.NotifyFunc) {
 	s.notify = notifyFunc
+}
+
+// SetEventCenter WARNING: ensure you can consume events, be care of resource leak.
+func (s *Service) SetEventCenter(ec types.EventCenter) {
+	s.event = ec
 }
