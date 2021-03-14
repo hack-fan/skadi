@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -23,10 +24,9 @@ func (s *Service) clearAgentAuthCache(key string) {
 }
 
 func (s *Service) AuthValidator(key string, c echo.Context) (bool, error) {
-	var aid string
-	var err error
+	var aid, uid string
 	// find in redis
-	aid, err = s.kv.Get(s.ctx, agentAuthKey(key)).Result()
+	val, err := s.kv.Get(s.ctx, agentAuthKey(key)).Result()
 	if err == redis.Nil {
 		// find in db
 		agent := new(types.Agent)
@@ -38,16 +38,26 @@ func (s *Service) AuthValidator(key string, c echo.Context) (bool, error) {
 			return false, fmt.Errorf("err read key from db: %w", err)
 		}
 		aid = agent.ID
+		uid = agent.UserID
 		// save in redis
-		err = s.kv.Set(s.ctx, agentAuthKey(key), aid, 24*time.Hour).Err()
+		err = s.kv.Set(s.ctx, agentAuthKey(key), aid+","+uid, 24*time.Hour).Err()
 		if err != nil {
 			go s.notify(err)
 		}
 	} else if err != nil {
 		return false, fmt.Errorf("err read key from redis: %w", err)
+	} else {
+		// parse val
+		pair := strings.Split(val, ",")
+		if len(pair) != 2 {
+			return false, fmt.Errorf("parse cached agent auth failed: %w", err)
+		}
+		aid = pair[0]
+		uid = pair[1]
 	}
 	// set context
 	c.Set("aid", aid)
+	c.Set("uid", uid)
 
 	return true, nil
 }
