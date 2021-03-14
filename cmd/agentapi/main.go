@@ -62,13 +62,12 @@ func main() {
 	// service
 	var s = service.New(kv, db, rest, log)
 
-	// add event center to service
-	// default is just log the events
+	// default event center is just log the events
 	// if you have event worker, set it to redis in settings
-	s.SetEventCenter(event.NewEventCenter(log, settings.Event))
+	var ev = event.NewEventCenter(log, settings.Event)
 
 	// handler
-	var h = NewHandler(s)
+	var h = NewHandler(s, ev)
 
 	// Echo instance
 	e := echo.New()
@@ -90,6 +89,8 @@ func main() {
 	a.GET("/agent/job", h.GetJob)
 	a.PUT("/agent/jobs/:id/succeed", h.PutJobSucceed)
 	a.PUT("/agent/jobs/:id/fail", h.PutJobFail)
+	a.POST("/agent/info", h.PostInfo)
+	a.POST("/agent/warning", h.PostWarning)
 
 	// Start server
 	e.Logger.Fatal(e.Start(settings.ListenAddr))
