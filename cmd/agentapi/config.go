@@ -1,6 +1,10 @@
 package main
 
-import "github.com/hack-fan/x/xdb"
+import (
+	"github.com/hack-fan/x/xdb"
+
+	"github.com/hack-fan/skadi/event"
+)
 
 // Settings will load from env and docker secret
 type Settings struct {
@@ -15,4 +19,6 @@ type Settings struct {
 		Password string
 		DB       int `default:"0"`
 	}
+
+	Event event.Config
 }

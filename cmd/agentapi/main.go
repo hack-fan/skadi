@@ -14,6 +14,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"go.uber.org/zap"
 
+	"github.com/hack-fan/skadi/event"
 	"github.com/hack-fan/skadi/service"
 	"github.com/hack-fan/skadi/types"
 )
@@ -60,6 +61,11 @@ func main() {
 
 	// service
 	var s = service.New(kv, db, rest, log)
+
+	// add event center to service
+	// default is just log the events
+	// if you have event worker, set it to redis in settings
+	s.SetEventCenter(event.NewEventCenter(log, settings.Event))
 
 	// handler
 	var h = NewHandler(s)
