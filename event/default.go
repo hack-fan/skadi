@@ -1,6 +1,8 @@
 package event
 
 import (
+	"context"
+
 	"go.uber.org/zap"
 
 	"github.com/hack-fan/skadi/types"
@@ -22,3 +24,6 @@ func (ec *DefaultEventCenter) Pub(e *types.Event) error {
 func (ec *DefaultEventCenter) Get() (*types.Event, error) {
 	return nil, nil
 }
+
+// default event center can not have worker
+func (ec *DefaultEventCenter) StartWorker(context.Context, types.EventHandler) {}

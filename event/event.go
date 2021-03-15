@@ -20,7 +20,7 @@ func NewEventCenter(log *zap.SugaredLogger, config Config) types.EventCenter {
 	switch config.Type {
 	case CenterTypeRedis:
 		kv := rdb.New(config.Redis)
-		return NewRedisEventCenter(kv, "skadi:event")
+		return NewRedisEventCenter(kv, "skadi:event", log)
 	default:
 		return NewDefaultEventCenter(log)
 	}

@@ -1,6 +1,9 @@
 package types
 
-import "time"
+import (
+	"context"
+	"time"
+)
 
 const (
 	EventTypeInfo    = "info"
@@ -20,9 +23,13 @@ type EventInput struct {
 	Message string `json:"message"`
 }
 
+type EventHandler func(e *Event) error
+
 type EventCenter interface {
 	// Pub publish a event to a queue or pool
 	Pub(e *Event) error
 	// Get a event, nil if no event found
 	Get() (*Event, error)
+	// StartWorker to check and get new event periodically in background
+	StartWorker(ctx context.Context, handler EventHandler)
 }
