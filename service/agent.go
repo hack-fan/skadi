@@ -139,18 +139,20 @@ func (s *Service) AgentSecret(aid string) (string, error) {
 }
 
 func (s *Service) AgentSecretReset(aid string) (string, error) {
-	// clear old in redis
+	// find old
 	old, err := s.AgentSecret(aid)
 	if err != nil {
 		return "", err
 	}
-	s.clearAgentAuthCache(old)
 	// new secret
 	secret := xid.New().String()
 	err = s.db.Model(&types.Agent{}).Update("secret", secret).Where("id = ?", aid).Error
 	if err != nil {
 		return "", fmt.Errorf("update agent secret failed: %w", err)
 	}
+	// clear old
+	s.clearAgentAuthCache(old)
+
 	return secret, nil
 }
 
