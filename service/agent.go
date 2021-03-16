@@ -153,3 +153,26 @@ func (s *Service) AgentSecretReset(aid string) (string, error) {
 	}
 	return secret, nil
 }
+
+func (s *Service) AgentDelete(aid string) error {
+	// check online
+	if s.IsAgentOnline(aid) {
+		return xerr.Newf(400, "AgentOnline", "you can not remove online agent")
+	}
+	// delete jobs and agent
+	err := s.db.Transaction(func(tx *gorm.DB) error {
+		err := tx.Delete(&types.Job{}, "agent_id = ?", aid).Error
+		if err != nil {
+			return fmt.Errorf("remove agent jobs failed: %w", err)
+		}
+		err = tx.Delete(&types.Agent{}, "id = ?", aid).Error
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("remove agent failed: %w", err)
+	}
+	return nil
+}
