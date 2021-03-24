@@ -1,7 +1,12 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -93,5 +98,25 @@ func main() {
 	a.POST("/agent/warning", h.PostWarning)
 
 	// Start server
-	e.Logger.Fatal(e.Start(settings.ListenAddr))
+	go func() {
+		log.Infof("Agent API Start: %s", settings.Hostname)
+		err := e.Start(settings.ListenAddr)
+		if err != nil && err != http.ErrServerClosed {
+			log.Errorf("Agent API Force Shutting down: %s %s", settings.Hostname, err)
+			log.Fatal("force shutting down the server")
+		}
+	}()
+	// Wait for interrupt signal to gracefully shutdown the server with a timeout of 10 seconds.
+	// Use a buffered channel to avoid missing signals as recommended for signal.Notify
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+	<-quit
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	err = e.Shutdown(ctx)
+	if err != nil {
+		log.Errorf("Agent API graceful shutdown failed: %s %s", settings.Hostname, err)
+		log.Fatal(err)
+	}
+	log.Infof("Agent API graceful shutdown: %s", settings.Hostname)
 }

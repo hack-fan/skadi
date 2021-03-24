@@ -10,6 +10,7 @@ import (
 type Settings struct {
 	Debug      bool   `default:"false"`
 	ListenAddr string `default:":1323"` // only change this in local debug
+	Hostname   string
 
 	DB xdb.Config
 
