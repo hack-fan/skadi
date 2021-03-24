@@ -8,17 +8,17 @@ import (
 )
 
 const (
-	CenterTypeRedis = "redis"
+	ProviderRedis = "redis"
 )
 
 type Config struct {
-	Type  string
-	Redis rdb.Config
+	Provider string
+	Redis    rdb.Config
 }
 
 func NewEventCenter(log *zap.SugaredLogger, config Config) types.EventCenter {
-	switch config.Type {
-	case CenterTypeRedis:
+	switch config.Provider {
+	case ProviderRedis:
 		kv := rdb.New(config.Redis)
 		return NewRedisEventCenter(kv, "skadi:event", log)
 	default:
