@@ -1,13 +1,14 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"time"
 
 	"github.com/go-redis/redis/v8"
-	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo/v4"
+	"gorm.io/gorm"
 
 	"github.com/hack-fan/skadi/types"
 )
@@ -31,7 +32,7 @@ func (s *Service) AuthValidator(key string, c echo.Context) (bool, error) {
 		// find in db
 		agent := new(types.Agent)
 		err = s.db.First(agent, "secret = ?", key).Error
-		if gorm.IsRecordNotFoundError(err) {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			// invalid key
 			return false, nil
 		} else if err != nil {

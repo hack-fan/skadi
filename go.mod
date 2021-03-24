@@ -12,7 +12,6 @@ require (
 	github.com/hack-fan/x/xerr v0.0.0-20210319021304-5489982cba3f
 	github.com/hack-fan/x/xtype v0.0.0-20210319021304-5489982cba3f
 	github.com/iancoleman/strcase v0.1.3 // indirect
-	github.com/jinzhu/gorm v1.9.16
 	github.com/labstack/echo/v4 v4.2.1
 	github.com/rs/xid v1.2.1
 	github.com/vmihailenco/msgpack/v5 v5.3.1
