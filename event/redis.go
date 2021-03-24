@@ -80,11 +80,7 @@ LOOP:
 				time.Sleep(time.Second * 3)
 				continue
 			}
-			err = handler(event)
-			if err != nil {
-				ec.log.Error(err)
-				continue
-			}
+			handler(event)
 		}
 	}
 }

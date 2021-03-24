@@ -23,7 +23,8 @@ type EventInput struct {
 	Message string `json:"message"`
 }
 
-type EventHandler func(e *Event) error
+// EventHandler handle the event, and please handle the error yourself.
+type EventHandler func(e *Event)
 
 type EventCenter interface {
 	// Pub publish a event to a queue or pool
