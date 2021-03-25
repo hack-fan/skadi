@@ -51,9 +51,18 @@ func (s *Service) UserAgents(uid string) ([]*types.Agent, error) {
 	var agents = make([]*types.Agent, 0)
 	err := s.db.Find(&agents, "user_id = ?", uid).Error
 	if err != nil {
-		return nil, fmt.Errorf("select agent from db error: %w", err)
+		return nil, fmt.Errorf("find user agents from db error: %w", err)
 	}
 	return agents, nil
+}
+
+func (s *Service) FindAgent(aid string) (*types.Agent, error) {
+	var agent = new(types.Agent)
+	err := s.db.First(agent, "id = ?", aid).Error
+	if err != nil {
+		return nil, fmt.Errorf("find agent from db error: %w", err)
+	}
+	return agent, nil
 }
 
 func (s *Service) FindUserAgentByName(uid, name string) (id string, ok bool, err error) {
