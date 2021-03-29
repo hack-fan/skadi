@@ -44,6 +44,8 @@ github.com/hack-fan/x/xecho v0.0.0-20210319021304-5489982cba3f h1:EuKXqY6RkBHNHq
 github.com/hack-fan/x/xecho v0.0.0-20210319021304-5489982cba3f/go.mod h1:T2o7LZy4AWtN4bCg3mo5OsjI9srzqlmwO+mmBuLm18w=
 github.com/hack-fan/x/xerr v0.0.0-20210319021304-5489982cba3f h1:PwdYyKcIVKOltGZa/KPjFH2pEIDi40oI/bVO4kXLbUA=
 github.com/hack-fan/x/xerr v0.0.0-20210319021304-5489982cba3f/go.mod h1:7oTyHzyt5nt3BpbbbWmUZ6lTVT8DXXR5uUxyCpundaQ=
+github.com/hack-fan/x/xlog v0.0.0-20210329025310-ea7900c25301 h1:uZA3JC8kyOeuQ43PQ/rbJfME5lsPTvPJDI9gIwW+1Os=
+github.com/hack-fan/x/xlog v0.0.0-20210329025310-ea7900c25301/go.mod h1:Tu4owtyeD5dDvU9ArNnfq9BYt0PjuLoQ6FvLzfXPwJw=
 github.com/hack-fan/x/xtype v0.0.0-20210319021304-5489982cba3f h1:lyzAjc31VsXeE7z3/Cnx73/5OyYJSGGZtPM+ApG1mNw=
 github.com/hack-fan/x/xtype v0.0.0-20210319021304-5489982cba3f/go.mod h1:clCggqc6/cNOO/RW43E7Byb2tUl+GRTA3RwDyulmxHg=
 github.com/hpcloud/tail v1.0.0/go.mod h1:ab1qPbhIpdTxEkNHXyeSf5vhxWSCs/tWer42PpOxQnU=

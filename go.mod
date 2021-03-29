@@ -10,6 +10,7 @@ require (
 	github.com/hack-fan/x/xdb v0.0.0-20210319021304-5489982cba3f
 	github.com/hack-fan/x/xecho v0.0.0-20210319021304-5489982cba3f
 	github.com/hack-fan/x/xerr v0.0.0-20210319021304-5489982cba3f
+	github.com/hack-fan/x/xlog v0.0.0-20210329025310-ea7900c25301 // indirect
 	github.com/hack-fan/x/xtype v0.0.0-20210319021304-5489982cba3f
 	github.com/iancoleman/strcase v0.1.3 // indirect
 	github.com/labstack/echo/v4 v4.2.1

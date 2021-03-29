@@ -7,17 +7,14 @@ import (
 	"github.com/go-resty/resty/v2"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
-
-	"github.com/hack-fan/skadi/types"
 )
 
 type Service struct {
-	ctx    context.Context
-	kv     *redis.Client
-	db     *gorm.DB
-	rest   *resty.Client
-	log    *zap.SugaredLogger
-	notify types.NotifyFunc
+	ctx  context.Context
+	kv   *redis.Client
+	db   *gorm.DB
+	rest *resty.Client
+	log  *zap.SugaredLogger
 }
 
 // New create a job service instance
@@ -28,13 +25,6 @@ func New(kv *redis.Client, db *gorm.DB, rest *resty.Client, log *zap.SugaredLogg
 		db:   db,
 		rest: rest,
 		log:  log,
-		notify: func(err error) {
-			log.Error(err)
-		},
 	}
 	return s
-}
-
-func (s *Service) SetNotifyFunc(notifyFunc types.NotifyFunc) {
-	s.notify = notifyFunc
 }

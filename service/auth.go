@@ -20,7 +20,8 @@ func agentAuthKey(key string) string {
 func (s *Service) clearAgentAuthCache(key string) {
 	err := s.kv.Del(s.ctx, agentAuthKey(key)).Err()
 	if err != nil {
-		s.notify(fmt.Errorf("clear agent secret in redis failed:%w", err))
+		s.log.Errorf("clear agent secret in redis failed:%s", err)
+		return
 	}
 }
 
@@ -43,7 +44,7 @@ func (s *Service) AuthValidator(key string, c echo.Context) (bool, error) {
 		// save in redis
 		err = s.kv.Set(s.ctx, agentAuthKey(key), aid+","+uid, 24*time.Hour).Err()
 		if err != nil {
-			go s.notify(err)
+			go s.log.Error(err)
 		}
 	} else if err != nil {
 		return false, fmt.Errorf("err read key from redis: %w", err)

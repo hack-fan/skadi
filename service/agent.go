@@ -89,13 +89,13 @@ func (s *Service) AgentOnline(aid, ip string) {
 	if !s.IsAgentOnline(aid) {
 		err := s.db.Model(&types.Agent{}).Where("id = ?", aid).Update("ip", ip).Error
 		if err != nil {
-			go s.notify(fmt.Errorf("save agent %s ip to db failed: %w", aid, err))
+			go s.log.Errorf("save agent %s ip to db failed: %s", aid, err)
 		}
 	}
 	// refresh online status
 	err := s.kv.Set(s.ctx, agentOnlineKey(aid), time.Now().Unix(), 3*time.Minute).Err()
 	if err != nil {
-		go s.notify(fmt.Errorf("set agent %s online failed: %w", aid, err))
+		go s.log.Errorf("set agent %s online failed: %s", aid, err)
 	}
 }
 
@@ -109,12 +109,12 @@ func (s *Service) AgentOffline(aid string) {
 		if err == redis.Nil {
 			break
 		} else if err != nil {
-			go s.notify(fmt.Errorf("pop job from queue error: %w", err))
+			s.log.Errorf("pop job from queue error: %s", err)
 			return
 		}
 		err = msgpack.Unmarshal(data, job)
 		if err != nil {
-			s.notify(fmt.Errorf("msgpack unmarshal job basic error: %w", err))
+			s.log.Errorf("msgpack unmarshal job basic error: %s", err)
 			return
 		}
 		s.JobExpire(job.ID)
@@ -122,14 +122,15 @@ func (s *Service) AgentOffline(aid string) {
 	// change agent activity log
 	err := s.db.Model(&types.Agent{}).Where("id = ?", aid).Update("activated_at", time.Now()).Error
 	if err != nil {
-		go s.notify(fmt.Errorf("save agent %s activity to db failed: %w", aid, err))
+		s.log.Errorf("save agent %s activity to db failed: %s", aid, err)
+		return
 	}
 }
 
 func (s *Service) IsAgentOnline(aid string) bool {
 	cnt, err := s.kv.Exists(s.ctx, agentOnlineKey(aid)).Result()
 	if err != nil {
-		go s.notify(fmt.Errorf("check agent %s online failed: %w", aid, err))
+		go s.log.Errorf("check agent %s online failed: %s", aid, err)
 		return false
 	}
 	if cnt > 0 {

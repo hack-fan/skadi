@@ -1,10 +1,14 @@
 package main
 
-import "github.com/hack-fan/x/xdb"
+import (
+	"github.com/hack-fan/x/xdb"
+	"github.com/hack-fan/x/xlog"
+)
 
 // Settings will load from env and docker secret
 type Settings struct {
-	Debug bool `default:"false"`
+	Debug    bool `default:"false"`
+	Hostname string
 
 	DB xdb.Config
 
@@ -14,4 +18,6 @@ type Settings struct {
 		Password string
 		DB       int `default:"0"`
 	}
+
+	Wework xlog.WeworkSender
 }

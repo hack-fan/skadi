@@ -15,9 +15,9 @@ import (
 	"github.com/hack-fan/x/xdb"
 	"github.com/hack-fan/x/xecho"
 	"github.com/hack-fan/x/xerr"
+	"github.com/hack-fan/x/xlog"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"go.uber.org/zap"
 
 	"github.com/hack-fan/skadi/event"
 	"github.com/hack-fan/skadi/service"
@@ -31,15 +31,7 @@ func main() {
 	config.MustLoad(settings)
 
 	// logger
-	var logger *zap.Logger
-	if settings.Debug {
-		logger, err = zap.NewDevelopment()
-	} else {
-		logger, err = zap.NewProduction()
-	}
-	if err != nil {
-		panic(err)
-	}
+	var logger = xlog.New(settings.Debug, settings.Wework)
 	defer logger.Sync() // nolint
 	var log = logger.Sugar()
 
@@ -99,7 +91,7 @@ func main() {
 
 	// Start server
 	go func() {
-		log.Infof("Agent API Start: %s", settings.Hostname)
+		log.Warnf("Agent API Start: %s", settings.Hostname)
 		err := e.Start(settings.ListenAddr)
 		if err != nil && err != http.ErrServerClosed {
 			log.Errorf("Agent API Force Shutting down: %s %s", settings.Hostname, err)
@@ -118,5 +110,5 @@ func main() {
 		log.Errorf("Agent API graceful shutdown failed: %s %s", settings.Hostname, err)
 		log.Fatal(err)
 	}
-	log.Infof("Agent API graceful shutdown: %s", settings.Hostname)
+	log.Warnf("Agent API graceful shutdown: %s", settings.Hostname)
 }

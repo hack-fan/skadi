@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/hack-fan/x/xdb"
+	"github.com/hack-fan/x/xlog"
 
 	"github.com/hack-fan/skadi/event"
 )
@@ -22,4 +23,6 @@ type Settings struct {
 	}
 
 	Event event.Config
+
+	Wework xlog.WeworkSender
 }

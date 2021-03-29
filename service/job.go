@@ -29,18 +29,18 @@ func (s *Service) JobPop(aid string) *types.JobBasic {
 	if err == redis.Nil {
 		return nil
 	} else if err != nil {
-		go s.notify(fmt.Errorf("pop job from queue error: %w", err))
+		s.log.Errorf("pop job from queue error: %s", err)
 		return nil
 	}
 	err = msgpack.Unmarshal(data, job)
 	if err != nil {
-		s.notify(fmt.Errorf("msgpack unmarshal job basic error: %w", err))
+		s.log.Errorf("msgpack unmarshal job basic error: %s", err)
 		return nil
 	}
 	// for expire count
 	err = s.kv.Set(s.ctx, jobWaitingKey(job.ID), "", 10*time.Minute).Err()
 	if err != nil {
-		s.notify(fmt.Errorf("save job to redis for waiting error: %w", err))
+		s.log.Errorf("save job to redis for waiting error: %s", err)
 		return nil
 	}
 	// async change db status
@@ -87,13 +87,14 @@ func (s *Service) JobSucceed(id string, result string) {
 		"succeeded_at": time.Now(),
 	}).Error
 	if err != nil {
-		s.notify(fmt.Errorf("save job %s succeeded status to db failed: %w", id, err))
+		s.log.Errorf("save job %s succeeded status to db failed: %s", id, err)
 		return
 	}
 	// rm waiting key
 	err = s.kv.Del(s.ctx, jobWaitingKey(id)).Err()
 	if err != nil {
-		s.notify(fmt.Errorf("delete job %s waiting key after succeeded error: %w", id, err))
+		s.log.Errorf("delete job %s waiting key after succeeded error: %s", id, err)
+		return
 	}
 	// callback
 	s.jobCallback(id)
@@ -107,13 +108,14 @@ func (s *Service) JobFail(id string, result string) {
 		"failed_at": time.Now(),
 	}).Error
 	if err != nil {
-		s.notify(fmt.Errorf("save job %s failed status to db failed: %w", id, err))
+		s.log.Errorf("save job %s failed status to db failed: %s", id, err)
 		return
 	}
 	// rm waiting key
 	err = s.kv.Del(s.ctx, jobWaitingKey(id)).Err()
 	if err != nil {
-		s.notify(fmt.Errorf("delete job %s waiting key after failed error: %w", id, err))
+		s.log.Errorf("delete job %s waiting key after failed error: %s", id, err)
+		return
 	}
 	// callback
 	s.jobCallback(id)
@@ -126,7 +128,7 @@ func (s *Service) JobExpire(id string) {
 		"expired_at": time.Now(),
 	}).Error
 	if err != nil {
-		s.notify(fmt.Errorf("save job %s expired status to db failed: %w", id, err))
+		s.log.Errorf("save job %s expired status to db failed: %s", id, err)
 		return
 	}
 	// callback
@@ -141,7 +143,7 @@ func (s *Service) JobCancel(id string) {
 		"canceled_at": time.Now(),
 	}).Error
 	if err != nil {
-		s.notify(fmt.Errorf("save job %s expired status to db failed: %w", id, err))
+		s.log.Errorf("save job %s expired status to db failed: %s", id, err)
 		return
 	}
 	// callback
@@ -159,7 +161,7 @@ func (s *Service) jobStore(id string, input *types.JobInput) {
 	}
 	err := s.db.Create(job).Error
 	if err != nil {
-		s.notify(fmt.Errorf("store new job %s to db failed: %w", id, err))
+		s.log.Errorf("store new job %s to db failed: %s", id, err)
 	}
 }
 
@@ -170,7 +172,7 @@ func (s *Service) jobSent(id string) {
 		"sent_at": time.Now(),
 	}).Error
 	if err != nil {
-		s.notify(fmt.Errorf("set job %s status to sent failed: %w", id, err))
+		s.log.Errorf("set job %s status to sent failed: %s", id, err)
 	}
 	// callback
 	s.jobCallback(id)
@@ -180,7 +182,7 @@ func (s *Service) jobCallback(id string) {
 	var job = new(types.Job)
 	err := s.db.First(job, "id = ?", id).Error
 	if err != nil {
-		s.notify(fmt.Errorf("job %s callback fetch job from db failed: %w", id, err))
+		s.log.Errorf("job %s callback fetch job from db failed: %s", id, err)
 		return
 	}
 	if job.Callback == "" {
@@ -188,6 +190,7 @@ func (s *Service) jobCallback(id string) {
 	}
 	_, err = s.rest.R().SetBody(job).Post(job.Callback)
 	if err != nil {
-		s.notify(fmt.Errorf("job %s callback failed: %w", id, err))
+		s.log.Errorf("job %s callback failed: %s", id, err)
+		return
 	}
 }

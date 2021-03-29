@@ -10,28 +10,19 @@ import (
 	"github.com/go-resty/resty/v2"
 	"github.com/hack-fan/config"
 	"github.com/hack-fan/x/xdb"
-	"go.uber.org/zap"
+	"github.com/hack-fan/x/xlog"
 
 	"github.com/hack-fan/skadi/service"
 	"github.com/hack-fan/skadi/types"
 )
 
 func main() {
-	var err error
 	// load config
 	var settings = new(Settings)
 	config.MustLoad(settings)
 
 	// logger
-	var logger *zap.Logger
-	if settings.Debug {
-		logger, err = zap.NewDevelopment()
-	} else {
-		logger, err = zap.NewProduction()
-	}
-	if err != nil {
-		panic(err)
-	}
+	var logger = xlog.New(settings.Debug, settings.Wework)
 	defer logger.Sync() // nolint
 	var log = logger.Sugar()
 
@@ -63,6 +54,7 @@ func main() {
 	ctx := context.Background()
 	pubsub := kv.Subscribe(ctx, "__keyevent@0__:expired")
 	log.Info("start watching redis key expired event...")
+	log.Warnf("Skadi Watcher started: %s", settings.Hostname)
 	for msg := range pubsub.Channel() {
 		key := msg.Payload
 		log.Debugw("redis key expired", "key", key)
@@ -74,5 +66,5 @@ func main() {
 			go s.AgentOffline(aid)
 		}
 	}
-	panic("watching redis key expired failed")
+	log.Errorf("Skadi Watcher start failed: %s", settings.Hostname)
 }
