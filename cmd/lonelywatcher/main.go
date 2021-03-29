@@ -3,7 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
+	"os/signal"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -51,20 +53,29 @@ func main() {
 	var s = service.New(kv, db, rest, log)
 
 	// watch redis expire events
-	ctx := context.Background()
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT)
+	defer stop()
 	pubsub := kv.Subscribe(ctx, "__keyevent@0__:expired")
 	log.Info("start watching redis key expired event...")
+
 	log.Warnf("Skadi Watcher started: %s", settings.Hostname)
-	for msg := range pubsub.Channel() {
-		key := msg.Payload
-		log.Debugw("redis key expired", "key", key)
-		if strings.HasPrefix(key, "job:wait:") {
-			jid := strings.TrimPrefix(key, "job:wait:")
-			go s.JobExpire(jid)
-		} else if strings.HasPrefix(key, "agent:online:") {
-			aid := strings.TrimPrefix(key, "agent:online:")
-			go s.AgentOffline(aid)
+LOOP:
+	for {
+		select {
+		case msg := <-pubsub.Channel():
+			key := msg.Payload
+			log.Debugw("redis key expired", "key", key)
+			if strings.HasPrefix(key, "job:wait:") {
+				jid := strings.TrimPrefix(key, "job:wait:")
+				go s.JobExpire(jid)
+			} else if strings.HasPrefix(key, "agent:online:") {
+				aid := strings.TrimPrefix(key, "agent:online:")
+				go s.AgentOffline(aid)
+			}
+		case <-ctx.Done():
+			stop()
+			break LOOP
 		}
 	}
-	log.Errorf("Skadi Watcher start failed: %s", settings.Hostname)
+	log.Warnf("Skadi Watcher Stopped: %s", settings.Hostname)
 }
