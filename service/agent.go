@@ -156,7 +156,7 @@ func (s *Service) AgentSecretReset(aid string) (string, error) {
 	}
 	// new secret
 	secret := xid.New().String()
-	err = s.db.Model(&types.Agent{}).Update("secret", secret).Where("id = ?", aid).Error
+	err = s.db.Model(&types.Agent{}).Where("id = ?", aid).Update("secret", secret).Error
 	if err != nil {
 		return "", fmt.Errorf("update agent secret failed: %w", err)
 	}
