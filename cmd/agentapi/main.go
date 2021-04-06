@@ -86,6 +86,7 @@ func main() {
 	a.GET("/agent/job", h.GetJob)
 	a.PUT("/agent/jobs/:id/succeed", h.PutJobSucceed)
 	a.PUT("/agent/jobs/:id/fail", h.PutJobFail)
+	a.PUT("/agent/jobs/:id/running", h.PutJobRunning)
 	a.POST("/agent/info", h.PostInfo)
 	a.POST("/agent/warning", h.PostWarning)
 

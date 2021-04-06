@@ -65,6 +65,20 @@ func (h *Handler) PutJobFail(c echo.Context) error {
 	return c.NoContent(204)
 }
 
+func (h *Handler) PutJobRunning(c echo.Context) error {
+	id := c.Param("id")
+	req := types.JobResult{}
+	err := c.Bind(&req)
+	if err != nil {
+		return err
+	}
+	err = h.s.JobRunning(id, req.Result)
+	if err != nil {
+		return err
+	}
+	return c.NoContent(204)
+}
+
 func (h *Handler) PostInfo(c echo.Context) error {
 	aid := c.Get("aid").(string)
 	uid := c.Get("uid").(string)

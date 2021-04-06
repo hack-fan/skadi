@@ -10,6 +10,7 @@ const (
 	JobStatusQueuing   = "queuing"
 	JobStatusCanceled  = "canceled"
 	JobStatusSent      = "sent"
+	JobStatusRunning   = "running"
 	JobStatusExpired   = "expired"
 	JobStatusSucceeded = "succeeded"
 	JobStatusFailed    = "failed"

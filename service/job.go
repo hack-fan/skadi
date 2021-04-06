@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -38,7 +39,7 @@ func (s *Service) JobPop(aid string) *types.JobBasic {
 		return nil
 	}
 	// for expire count
-	err = s.kv.Set(s.ctx, jobWaitingKey(job.ID), "", 10*time.Minute).Err()
+	err = s.kv.Set(s.ctx, jobWaitingKey(job.ID), 0, 10*time.Minute).Err()
 	if err != nil {
 		s.log.Errorf("save job to redis for waiting error: %s", err)
 		return nil
@@ -86,6 +87,43 @@ func (s *Service) Job(id string) (*types.Job, error) {
 		return nil, err
 	}
 	return job, nil
+}
+
+func (s *Service) JobRunning(id string, message string) error {
+	// check status
+	cnt, err := s.kv.Get(s.ctx, jobWaitingKey(id)).Int()
+	if errors.Is(err, redis.Nil) {
+		return xerr.Newf(400, "JobNotFound", "job %s is not active", id)
+	} else if err != nil {
+		s.log.Errorf("job running report redis error: %s", err)
+		return err
+	}
+	if cnt >= 3 {
+		return xerr.Newf(400, "LimitExceeded", "job %s has report running 3 times", id)
+	}
+	// refresh ttl
+	err = s.kv.Incr(s.ctx, jobWaitingKey(id)).Err()
+	if err != nil {
+		s.log.Errorf("job running status incr error: %s", err)
+		return err
+	}
+	err = s.kv.Expire(s.ctx, jobWaitingKey(id), 10*time.Minute).Err()
+	if err != nil {
+		s.log.Errorf("incr job step error: %s", err)
+		return err
+	}
+	// save to db
+	err = s.db.Model(&types.Job{}).Where("id = ?", id).Updates(map[string]interface{}{
+		"status": types.JobStatusRunning,
+		"result": message,
+	}).Error
+	if err != nil {
+		s.log.Errorf("save job %s running status to db failed: %s", id, err)
+		return err
+	}
+	// callback
+	s.jobCallback(id)
+	return nil
 }
 
 func (s *Service) JobSucceed(id string, result string) error {
