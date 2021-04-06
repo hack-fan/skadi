@@ -44,7 +44,10 @@ func (h *Handler) PutJobSucceed(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	h.s.JobSucceed(id, req.Result)
+	err = h.s.JobSucceed(id, req.Result)
+	if err != nil {
+		return err
+	}
 	return c.NoContent(204)
 }
 
@@ -55,7 +58,10 @@ func (h *Handler) PutJobFail(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	h.s.JobFail(id, req.Result)
+	err = h.s.JobFail(id, req.Result)
+	if err != nil {
+		return err
+	}
 	return c.NoContent(204)
 }
 

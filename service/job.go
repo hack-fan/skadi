@@ -79,46 +79,75 @@ func (s *Service) JobPush(input *types.JobInput) error {
 	return nil
 }
 
-func (s *Service) JobSucceed(id string, result string) {
+func (s *Service) Job(id string) (*types.Job, error) {
+	var job = new(types.Job)
+	err := s.db.First(job, "id = ?", id).Error
+	if err != nil {
+		return nil, err
+	}
+	return job, nil
+}
+
+func (s *Service) JobSucceed(id string, result string) error {
+	// check status
+	job, err := s.Job(id)
+	if err != nil {
+		s.log.Errorf("check job %s status failed: %s", id, err)
+		return err
+	}
+	if job.Status == types.JobStatusSucceeded || job.Status == types.JobStatusFailed {
+		return xerr.Newf(400, "JobFinished", "the job [%s] has been finished", job.Message)
+	}
 	// change db
-	err := s.db.Model(&types.Job{}).Where("id = ?", id).Updates(map[string]interface{}{
+	err = s.db.Model(&types.Job{}).Where("id = ?", id).Updates(map[string]interface{}{
 		"status":       types.JobStatusSucceeded,
 		"result":       result,
 		"succeeded_at": time.Now(),
 	}).Error
 	if err != nil {
 		s.log.Errorf("save job %s succeeded status to db failed: %s", id, err)
-		return
+		return err
 	}
 	// rm waiting key
 	err = s.kv.Del(s.ctx, jobWaitingKey(id)).Err()
 	if err != nil {
 		s.log.Errorf("delete job %s waiting key after succeeded error: %s", id, err)
-		return
+		return err
 	}
 	// callback
 	s.jobCallback(id)
+	return nil
 }
 
-func (s *Service) JobFail(id string, result string) {
+func (s *Service) JobFail(id string, result string) error {
+	// check status
+	job, err := s.Job(id)
+	if err != nil {
+		s.log.Errorf("check job %s status failed: %s", id, err)
+		return err
+	}
+	if job.Status == types.JobStatusSucceeded || job.Status == types.JobStatusFailed {
+		return xerr.Newf(400, "JobFinished", "the job [%s] has been finished", job.Message)
+	}
 	// change db
-	err := s.db.Model(&types.Job{}).Where("id = ?", id).Updates(map[string]interface{}{
+	err = s.db.Model(&types.Job{}).Where("id = ?", id).Updates(map[string]interface{}{
 		"status":    types.JobStatusFailed,
 		"result":    result,
 		"failed_at": time.Now(),
 	}).Error
 	if err != nil {
 		s.log.Errorf("save job %s failed status to db failed: %s", id, err)
-		return
+		return err
 	}
 	// rm waiting key
 	err = s.kv.Del(s.ctx, jobWaitingKey(id)).Err()
 	if err != nil {
 		s.log.Errorf("delete job %s waiting key after failed error: %s", id, err)
-		return
+		return err
 	}
 	// callback
 	s.jobCallback(id)
+	return nil
 }
 
 func (s *Service) JobExpire(id string) {
