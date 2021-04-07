@@ -27,8 +27,24 @@ func (s *Service) AgentAdd(uid string, info *types.AgentBasic) (*types.Agent, er
 	if types.RESERVED.Contains(info.Name) || types.RESERVED.Contains(info.Alias) {
 		return nil, xerr.New(400, "InvalidName", "the name is reserved by system")
 	}
-	if info.Alias != "" && types.RESERVED.Contains(info.Alias) {
-		return nil, xerr.New(400, "InvalidAlias", "the alias is reserved by system")
+	_, ok, err := s.FindUserAgentByName(uid, info.Name)
+	if err != nil {
+		return nil, err
+	}
+	if ok {
+		return nil, xerr.New(400, "InvalidName", "the name is used by your other agent")
+	}
+	if info.Alias != "" {
+		_, ok, err := s.FindUserAgentByName(uid, info.Alias)
+		if err != nil {
+			return nil, err
+		}
+		if ok {
+			return nil, xerr.New(400, "InvalidAlias", "the alias is used by your other agent")
+		}
+		if types.RESERVED.Contains(info.Alias) {
+			return nil, xerr.New(400, "InvalidAlias", "the alias is reserved by system")
+		}
 	}
 	// create
 	var agent = &types.Agent{
@@ -39,7 +55,7 @@ func (s *Service) AgentAdd(uid string, info *types.AgentBasic) (*types.Agent, er
 		Remark: info.Remark,
 		Secret: xid.New().String(),
 	}
-	err := s.db.Create(agent).Error
+	err = s.db.Create(agent).Error
 	if err != nil {
 		return nil, fmt.Errorf("create new agent to db failed: %w", err)
 	}
