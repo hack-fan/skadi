@@ -98,7 +98,7 @@ func (h *Handler) PostInfo(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.NoContent(201)
+	return c.NoContent(202)
 }
 
 func (h *Handler) PostWarning(c echo.Context) error {
@@ -120,7 +120,29 @@ func (h *Handler) PostWarning(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.NoContent(201)
+	return c.NoContent(202)
+}
+
+func (h *Handler) PostText(c echo.Context) error {
+	aid := c.Get("aid").(string)
+	uid := c.Get("uid").(string)
+	input := new(types.EventInput)
+	err := c.Bind(input)
+	if err != nil {
+		return err
+	}
+	err = h.ev.Pub(&types.Event{
+		ID:        xid.New().String(),
+		AgentID:   aid,
+		UserID:    uid,
+		Type:      types.EventTypeText,
+		Message:   input.Message,
+		CreatedAt: time.Now(),
+	})
+	if err != nil {
+		return err
+	}
+	return c.NoContent(202)
 }
 
 // API status

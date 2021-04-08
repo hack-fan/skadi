@@ -8,6 +8,7 @@ import (
 const (
 	EventTypeInfo    = "info"
 	EventTypeWarning = "warning"
+	EventTypeText    = "text"
 )
 
 type Event struct {

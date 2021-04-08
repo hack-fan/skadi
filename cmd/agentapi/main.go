@@ -89,6 +89,7 @@ func main() {
 	a.PUT("/agent/jobs/:id/running", h.PutJobRunning)
 	a.POST("/agent/info", h.PostInfo)
 	a.POST("/agent/warning", h.PostWarning)
+	a.POST("/agent/kf", h.PostText)
 
 	// Start server
 	go func() {
