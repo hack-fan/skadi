@@ -1,7 +1,6 @@
 package service
 
 import (
-	"errors"
 	"fmt"
 	"time"
 
@@ -21,6 +20,8 @@ func jobWaitingKey(id string) string {
 	return fmt.Sprintf("job:wait:%s", id)
 }
 
+var jobWaitingTime = time.Minute * 10
+
 // call by agent, so will not return errors, notify the error to admin.
 func (s *Service) JobPop(aid string) *types.JobBasic {
 	// pop from redis
@@ -39,7 +40,7 @@ func (s *Service) JobPop(aid string) *types.JobBasic {
 		return nil
 	}
 	// for expire count
-	err = s.kv.Set(s.ctx, jobWaitingKey(job.ID), 0, 10*time.Minute).Err()
+	err = s.kv.Set(s.ctx, jobWaitingKey(job.ID), 0, jobWaitingTime).Err()
 	if err != nil {
 		s.log.Errorf("save job to redis for waiting error: %s", err)
 		return nil
@@ -91,25 +92,18 @@ func (s *Service) Job(id string) (*types.Job, error) {
 
 func (s *Service) JobRunning(id string, message string) error {
 	// check status
-	cnt, err := s.kv.Get(s.ctx, jobWaitingKey(id)).Int()
-	if errors.Is(err, redis.Nil) {
-		return xerr.Newf(400, "JobNotFound", "job %s is not active", id)
-	} else if err != nil {
+	cnt, err := s.kv.Exists(s.ctx, jobWaitingKey(id)).Result()
+	if err != nil {
 		s.log.Errorf("job running report redis error: %s", err)
 		return err
 	}
-	if cnt >= 3 {
-		return xerr.Newf(400, "LimitExceeded", "job %s has report running 3 times", id)
+	if cnt <= 0 {
+		return xerr.Newf(400, "JobNotFound", "job %s is not active", id)
 	}
 	// refresh ttl
-	err = s.kv.Incr(s.ctx, jobWaitingKey(id)).Err()
+	err = s.kv.Expire(s.ctx, jobWaitingKey(id), jobWaitingTime).Err()
 	if err != nil {
-		s.log.Errorf("job running status incr error: %s", err)
-		return err
-	}
-	err = s.kv.Expire(s.ctx, jobWaitingKey(id), 10*time.Minute).Err()
-	if err != nil {
-		s.log.Errorf("incr job step error: %s", err)
+		s.log.Errorf("refresh job ttl error: %s", err)
 		return err
 	}
 	// save to db
