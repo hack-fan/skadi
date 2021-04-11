@@ -12,7 +12,7 @@ type Agent struct {
 	Remark string `json:"remark"`
 	// IP address last connected from
 	IP string `json:"ip" gorm:"type:varchar(50)"`
-	// Only update after a agent offline
+	// Only update after a agent offline, means last activated at that time.
 	ActivatedAt *time.Time `json:"activated_at"`
 	CreatedAt   time.Time  `json:"created_at"`
 	UpdatedAt   time.Time  `json:"updated_at"`

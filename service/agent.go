@@ -99,23 +99,25 @@ func (s *Service) FindUserAgentByName(uid, name string) (id string, ok bool, err
 	return agent.ID, true, nil
 }
 
-// call after every agent job pull
+// AgentOnline will call after every agent job pull
 func (s *Service) AgentOnline(aid, ip string) {
 	// save ip after first request
-	if !s.IsAgentOnline(aid) {
-		err := s.db.Model(&types.Agent{}).Where("id = ?", aid).Update("ip", ip).Error
-		if err != nil {
-			go s.log.Errorf("save agent %s ip to db failed: %s", aid, err)
-		}
+	// tmp code for fresh all ip, fix an ip bug before
+	// if !s.IsAgentOnline(aid) {
+	err := s.db.Model(&types.Agent{}).Where("id = ?", aid).Update("ip", ip).Error
+	if err != nil {
+		go s.log.Errorf("save agent %s ip to db failed: %s", aid, err)
 	}
+	// }
+
 	// refresh online status
-	err := s.kv.Set(s.ctx, agentOnlineKey(aid), time.Now().Unix(), 3*time.Minute).Err()
+	err = s.kv.Set(s.ctx, agentOnlineKey(aid), time.Now().Unix(), 3*time.Minute).Err()
 	if err != nil {
 		go s.log.Errorf("set agent %s online failed: %s", aid, err)
 	}
 }
 
-// call after the watcher found agent status switch to offline
+// AgentOffline will call after the watcher found agent status switch to offline
 func (s *Service) AgentOffline(aid string) {
 	// clear the agent queue, set all job as expired
 	for {
