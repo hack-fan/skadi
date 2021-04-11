@@ -52,12 +52,12 @@ func main() {
 		SetRetryWaitTime(5 * time.Second).
 		SetRetryMaxWaitTime(60 * time.Second)
 
-	// service
-	var s = service.New(kv, db, rest, log)
-
 	// default event center is just log the events
 	// if you have event worker, set it to redis in settings
 	var ev = event.NewEventCenter(log, settings.Event)
+
+	// service
+	var s = service.New(kv, db, rest, log, ev)
 
 	// handler
 	var h = NewHandler(s, ev)

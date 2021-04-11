@@ -10,12 +10,12 @@ import (
 )
 
 type Handler struct {
-	js *service.Service
+	s *service.Service
 }
 
-func NewHandler(js *service.Service) *Handler {
+func NewHandler(s *service.Service) *Handler {
 	return &Handler{
-		js: js,
+		s: s,
 	}
 }
 
@@ -25,7 +25,7 @@ func (h *Handler) PostJob(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	err = h.js.JobPush(req)
+	err = h.s.JobPush(req)
 	if err != nil {
 		return err
 	}
@@ -34,7 +34,7 @@ func (h *Handler) PostJob(c echo.Context) error {
 
 func (h *Handler) PutJobExpire(c echo.Context) error {
 	id := c.Param("id")
-	h.js.JobExpire(id)
+	h.s.JobExpire(id)
 	return c.NoContent(204)
 }
 
@@ -45,7 +45,7 @@ func (h *Handler) PostAgent(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	agent, err := h.js.AgentAdd(uid, basic)
+	agent, err := h.s.AgentAdd(uid, basic)
 	if err != nil {
 		return err
 	}
