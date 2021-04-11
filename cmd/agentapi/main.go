@@ -2,19 +2,18 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"github.com/go-redis/redis/v8"
 	"github.com/go-resty/resty/v2"
 	"github.com/hack-fan/config"
+	"github.com/hack-fan/x/rdb"
 	"github.com/hack-fan/x/xdb"
 	"github.com/hack-fan/x/xecho"
-	"github.com/hack-fan/x/xerr"
 	"github.com/hack-fan/x/xlog"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -36,11 +35,8 @@ func main() {
 	var log = logger.Sugar()
 
 	// kv
-	var kv = redis.NewClient(&redis.Options{
-		Addr:     fmt.Sprintf("%s:%s", settings.Redis.Host, settings.Redis.Port),
-		Password: settings.Redis.Password,
-		DB:       settings.Redis.DB,
-	})
+	rdb.SetLogger(log)
+	var kv = rdb.New(settings.Redis)
 
 	// db
 	xdb.SetLogger(log)
@@ -71,10 +67,14 @@ func main() {
 	if settings.Debug {
 		e.Debug = true
 	}
+	// Real IP
+	e.IPExtractor = echo.ExtractIPFromXFFHeader()
 	// Error handler
-	e.HTTPErrorHandler = xerr.ErrorHandler
+	e.HTTPErrorHandler = xecho.NewErrorHandler(logger)
+	// Disable echo logs, error handler above will log the error
+	e.Logger.SetOutput(ioutil.Discard)
 	// Middleware
-	e.Use(xecho.LoggerMid())
+	e.Use(xecho.ZapLogger(logger))
 	e.Use(middleware.Recover())
 
 	// Auth group

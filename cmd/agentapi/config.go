@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/hack-fan/x/rdb"
 	"github.com/hack-fan/x/xdb"
 	"github.com/hack-fan/x/xlog"
 
@@ -15,12 +16,7 @@ type Settings struct {
 
 	DB xdb.Config
 
-	Redis struct {
-		Host     string `default:"redis"`
-		Port     string `default:"6379"`
-		Password string
-		DB       int `default:"0"`
-	}
+	Redis rdb.Config
 
 	Event event.Config
 

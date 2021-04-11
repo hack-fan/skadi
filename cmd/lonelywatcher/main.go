@@ -2,15 +2,14 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"os/signal"
 	"strings"
 	"syscall"
 	"time"
 
-	"github.com/go-redis/redis/v8"
 	"github.com/go-resty/resty/v2"
 	"github.com/hack-fan/config"
+	"github.com/hack-fan/x/rdb"
 	"github.com/hack-fan/x/xdb"
 	"github.com/hack-fan/x/xlog"
 
@@ -29,11 +28,8 @@ func main() {
 	var log = logger.Sugar()
 
 	// kv
-	var kv = redis.NewClient(&redis.Options{
-		Addr:     fmt.Sprintf("%s:%s", settings.Redis.Host, settings.Redis.Port),
-		Password: settings.Redis.Password,
-		DB:       settings.Redis.DB,
-	})
+	rdb.SetLogger(log)
+	var kv = rdb.New(settings.Redis)
 
 	// db
 	xdb.SetLogger(log)

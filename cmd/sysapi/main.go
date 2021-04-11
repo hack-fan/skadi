@@ -1,47 +1,37 @@
+// this package is used by local debug only
+// in production there would be other upstream service
 package main
 
 import (
-	"fmt"
+	"io/ioutil"
 	"time"
 
-	"github.com/go-redis/redis/v8"
 	"github.com/go-resty/resty/v2"
 	"github.com/hack-fan/config"
+	"github.com/hack-fan/x/rdb"
 	"github.com/hack-fan/x/xdb"
-	"github.com/hack-fan/x/xerr"
+	"github.com/hack-fan/x/xecho"
+	"github.com/hack-fan/x/xlog"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"go.uber.org/zap"
 
 	"github.com/hack-fan/skadi/service"
 	"github.com/hack-fan/skadi/types"
 )
 
 func main() {
-	var err error
 	// load config
 	var settings = new(Settings)
 	config.MustLoad(settings)
 
 	// logger
-	var logger *zap.Logger
-	if settings.Debug {
-		logger, err = zap.NewDevelopment()
-	} else {
-		logger, err = zap.NewProduction()
-	}
-	if err != nil {
-		panic(err)
-	}
+	var logger = xlog.New(settings.Debug, settings.Wework)
 	defer logger.Sync() // nolint
 	var log = logger.Sugar()
 
 	// kv
-	var kv = redis.NewClient(&redis.Options{
-		Addr:     fmt.Sprintf("%s:%s", settings.Redis.Host, settings.Redis.Port),
-		Password: settings.Redis.Password,
-		DB:       settings.Redis.DB,
-	})
+	rdb.SetLogger(log)
+	var kv = rdb.New(settings.Redis)
 
 	// db
 	xdb.SetLogger(log)
@@ -68,10 +58,14 @@ func main() {
 	if settings.Debug {
 		e.Debug = true
 	}
+	// Real IP
+	e.IPExtractor = echo.ExtractIPFromXFFHeader()
 	// Error handler
-	e.HTTPErrorHandler = xerr.ErrorHandler
+	e.HTTPErrorHandler = xecho.NewErrorHandler(logger)
+	// Disable echo logs, error handler above will log the error
+	e.Logger.SetOutput(ioutil.Discard)
 	// Middleware
-	e.Use(middleware.Logger())
+	e.Use(xecho.ZapLogger(logger))
 	e.Use(middleware.Recover())
 
 	// Routes
