@@ -75,8 +75,8 @@ func main() {
 	e.Logger.SetOutput(ioutil.Discard)
 	// Middleware
 	e.Use(xecho.ZapLoggerWithSkipper(logger, xecho.NewSkipper([]xecho.SkipRule{
-		{http.MethodGet, "/status", 204},
-		{http.MethodGet, "/agent/job", 204},
+		{Method: http.MethodGet, Path: "/status", StatusCode: 204},
+		{Method: http.MethodGet, Path: "/agent/job", StatusCode: 204},
 	})))
 	e.Use(middleware.Recover())
 
