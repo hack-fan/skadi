@@ -74,7 +74,10 @@ func main() {
 	// Disable echo logs, error handler above will log the error
 	e.Logger.SetOutput(ioutil.Discard)
 	// Middleware
-	e.Use(xecho.ZapLogger(logger))
+	e.Use(xecho.ZapLoggerWithSkipper(logger, xecho.NewSkipper([]xecho.SkipRule{
+		{http.MethodGet, "/status", 204},
+		{http.MethodGet, "/agent/job", 204},
+	})))
 	e.Use(middleware.Recover())
 
 	// Auth group

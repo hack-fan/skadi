@@ -7,12 +7,12 @@ require (
 	github.com/go-resty/resty/v2 v2.6.0
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/hack-fan/config v0.0.0-20200528030741-0a9be90586b6
-	github.com/hack-fan/x/rdb v0.0.0-20210411115208-75d78e08fe93
-	github.com/hack-fan/x/xdb v0.0.0-20210411115208-75d78e08fe93
-	github.com/hack-fan/x/xecho v0.0.0-20210411115208-75d78e08fe93
-	github.com/hack-fan/x/xerr v0.0.0-20210411115208-75d78e08fe93
-	github.com/hack-fan/x/xlog v0.0.0-20210411115208-75d78e08fe93
-	github.com/hack-fan/x/xtype v0.0.0-20210411115208-75d78e08fe93
+	github.com/hack-fan/x/rdb v0.0.0-20210411140046-cbe2c1f5e6e6
+	github.com/hack-fan/x/xdb v0.0.0-20210411140046-cbe2c1f5e6e6
+	github.com/hack-fan/x/xecho v0.0.0-20210411140046-cbe2c1f5e6e6
+	github.com/hack-fan/x/xerr v0.0.0-20210411140046-cbe2c1f5e6e6
+	github.com/hack-fan/x/xlog v0.0.0-20210411140046-cbe2c1f5e6e6
+	github.com/hack-fan/x/xtype v0.0.0-20210411140046-cbe2c1f5e6e6
 	github.com/iancoleman/strcase v0.1.3 // indirect
 	github.com/labstack/echo/v4 v4.2.2
 	github.com/rs/xid v1.3.0
