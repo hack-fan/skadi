@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"time"
+	"unicode/utf8"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/hack-fan/x/xerr"
@@ -23,6 +24,15 @@ func (s *Service) AgentAdd(uid string, info *types.AgentBasic) (*types.Agent, er
 	// check
 	if info == nil || info.Name == "" {
 		return nil, xerr.New(400, "MissingName", "agent name is required")
+	}
+	if utf8.RuneCountInString(info.Name) > 50 {
+		return nil, xerr.New(400, "InvalidName", "agent name must less than 50")
+	}
+	if utf8.RuneCountInString(info.Alias) > 50 {
+		return nil, xerr.New(400, "InvalidAlias", "agent alias must less than 50")
+	}
+	if utf8.RuneCountInString(info.Remark) > 250 {
+		return nil, xerr.New(400, "InvalidRemark", "agent remark must less than 250")
 	}
 	if types.RESERVED.Contains(info.Name) || types.RESERVED.Contains(info.Alias) {
 		return nil, xerr.New(400, "InvalidName", "the name is reserved by system")
