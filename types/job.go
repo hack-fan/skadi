@@ -29,11 +29,11 @@ type JobInput struct {
 	UserID  string `json:"user_id" gorm:"type:varchar(20);index:by_user"`
 	AgentID string `json:"agent_id" gorm:"type:varchar(20);index:by_agent"`
 	// job payload
-	Message string `json:"message" gorm:"type:varchar(255)"`
+	Message string `json:"message" gorm:"type:varchar(255)" validate:"required,lte=255"`
 	// source context, any string defined by source
-	Source string `json:"source" gorm:"type:varchar(255)"`
+	Source string `json:"source" gorm:"type:varchar(255)" validate:"omitempty,lte=255"`
 	// callback url, will be called after expired/succeeded/failed
-	Callback string `json:"callback" gorm:"type:varchar(255)"`
+	Callback string `json:"callback" gorm:"type:varchar(255)" validate:"omitempty,lte=255"`
 }
 
 // Job will be saved in db, it's a gorm mysql model
@@ -53,6 +53,7 @@ type Job struct {
 }
 
 // JobResult is reported by agent
+// The length of result is not limited, if it longer than 1024, will be cut.
 type JobResult struct {
 	// agent returned, job log or other message
 	Result string `json:"result,omitempty"`

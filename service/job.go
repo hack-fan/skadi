@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	"time"
+	"unicode/utf8"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/hack-fan/x/xerr"
@@ -22,7 +23,7 @@ func jobWaitingKey(id string) string {
 
 var jobWaitingTime = time.Minute * 10
 
-// call by agent, so will not return errors, notify the error to admin.
+// JobPop call by agent, so will not return errors, notify the error to admin.
 func (s *Service) JobPop(aid string) *types.JobBasic {
 	// pop from redis
 	var job = new(types.JobBasic)
@@ -51,8 +52,13 @@ func (s *Service) JobPop(aid string) *types.JobBasic {
 	return job
 }
 
-// call by upstream system
+// JobPush call by upstream system
 func (s *Service) JobPush(input *types.JobInput) error {
+	// check input
+	err := s.validate.Struct(input)
+	if err != nil {
+		return xerr.New(400, "InvalidInput", err.Error())
+	}
 	// check agent status
 	exists, err := s.kv.Exists(s.ctx, agentOnlineKey(input.AgentID)).Result()
 	if err != nil {
@@ -106,6 +112,10 @@ func (s *Service) JobRunning(id string, message string) error {
 		s.log.Errorf("refresh job ttl error: %s", err)
 		return err
 	}
+	// check length
+	if utf8.RuneCountInString(message) > 1024 {
+		message = message[:1024]
+	}
 	// save to db
 	err = s.db.Model(&types.Job{}).Where("id = ?", id).Updates(map[string]interface{}{
 		"status": types.JobStatusRunning,
@@ -129,6 +139,10 @@ func (s *Service) JobSucceed(id string, result string) error {
 	}
 	if job.Status == types.JobStatusSucceeded || job.Status == types.JobStatusFailed {
 		return xerr.Newf(400, "JobFinished", "the job [%s] has been finished", job.Message)
+	}
+	// check length
+	if utf8.RuneCountInString(result) > 1024 {
+		result = result[:1024]
 	}
 	// change db
 	err = s.db.Model(&types.Job{}).Where("id = ?", id).Updates(map[string]interface{}{
@@ -160,6 +174,10 @@ func (s *Service) JobFail(id string, result string) error {
 	}
 	if job.Status == types.JobStatusSucceeded || job.Status == types.JobStatusFailed {
 		return xerr.Newf(400, "JobFinished", "the job [%s] has been finished", job.Message)
+	}
+	// check length
+	if utf8.RuneCountInString(result) > 1024 {
+		result = result[:1024]
 	}
 	// change db
 	err = s.db.Model(&types.Job{}).Where("id = ?", id).Updates(map[string]interface{}{
@@ -196,7 +214,7 @@ func (s *Service) JobExpire(id string) {
 	s.jobCallback(id)
 }
 
-// Agent offline will cancel all job in queue
+// JobCancel Agent offline will cancel all job in queue
 func (s *Service) JobCancel(id string) {
 	// change db
 	err := s.db.Model(&types.Job{}).Where("id = ?", id).Updates(map[string]interface{}{
