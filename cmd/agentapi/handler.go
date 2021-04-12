@@ -25,9 +25,10 @@ func NewHandler(s *service.Service, ev types.EventCenter) *Handler {
 
 func (h *Handler) GetJob(c echo.Context) error {
 	aid := c.Get("aid").(string)
+	uid := c.Get("uid").(string)
 	ip := c.RealIP()
 	// async set agent online
-	go h.s.AgentOnline(aid, ip)
+	go h.s.AgentOnline(aid, uid, ip)
 	// pop a job
 	resp := h.s.JobPop(aid)
 	if resp != nil {

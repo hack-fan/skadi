@@ -110,20 +110,31 @@ func (s *Service) FindUserAgentByName(uid, name string) (id string, ok bool, err
 }
 
 // AgentOnline will call after every agent job pull
-func (s *Service) AgentOnline(aid, ip string) {
+func (s *Service) AgentOnline(aid, uid, ip string) {
 	// save ip after first request
-	// tmp code for fresh all ip, fix an ip bug before
 	if !s.IsAgentOnline(aid) {
 		err := s.db.Model(&types.Agent{}).Where("id = ?", aid).Update("ip", ip).Error
 		if err != nil {
-			go s.log.Errorf("save agent %s ip to db failed: %s", aid, err)
+			s.log.Errorf("save agent %s ip to db failed: %s", aid, err)
+		}
+		// notify owner
+		err = s.ev.Pub(&types.Event{
+			ID:        xid.New().String(),
+			AgentID:   aid,
+			UserID:    uid,
+			Type:      types.EventTypeInfo,
+			Message:   "Agent is online",
+			CreatedAt: time.Now(),
+		})
+		if err != nil {
+			s.log.Errorf("pub agent %s online event failed: %s", aid, err)
 		}
 	}
 
 	// refresh online status
 	err := s.kv.Set(s.ctx, agentOnlineKey(aid), time.Now().Unix(), 3*time.Minute).Err()
 	if err != nil {
-		go s.log.Errorf("set agent %s online failed: %s", aid, err)
+		s.log.Errorf("set agent %s online failed: %s", aid, err)
 	}
 }
 
@@ -152,6 +163,23 @@ func (s *Service) AgentOffline(aid string) {
 	if err != nil {
 		s.log.Errorf("save agent %s activity to db failed: %s", aid, err)
 		return
+	}
+	// notify owner
+	agent, err := s.FindAgent(aid)
+	if err != nil {
+		s.log.Errorf("agent offline error: %s", err)
+		return
+	}
+	err = s.ev.Pub(&types.Event{
+		ID:        xid.New().String(),
+		AgentID:   aid,
+		UserID:    agent.UserID,
+		Type:      types.EventTypeWarning,
+		Message:   "Agent is offline",
+		CreatedAt: time.Now(),
+	})
+	if err != nil {
+		s.log.Errorf("pub agent %s offline failed: %s", aid, err)
 	}
 }
 
