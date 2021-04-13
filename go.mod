@@ -20,7 +20,8 @@ require (
 	github.com/rs/xid v1.3.0
 	github.com/vmihailenco/msgpack/v5 v5.3.1
 	go.uber.org/zap v1.16.0
+	golang.org/x/sys v0.0.0-20210412220455-f1c623a9e750 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gorm.io/gorm v1.21.8-0.20210409034324-d278ca49ef30
+	gorm.io/gorm v1.21.8-0.20210413014130-5555b010dc26
 )
