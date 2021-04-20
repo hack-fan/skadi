@@ -16,7 +16,8 @@ const (
 	JobStatusFailed    = "failed"
 )
 
-var RESERVED = xtype.Strings{"agent", "status", "help", "delay", "group"}
+var RESERVED = xtype.Strings{"agent", "status", "help", "delay", "group", "plan", "poster",
+	"link", "unlink", "follow", "unfollow"}
 
 // JobBasic will be pulled by agent
 type JobBasic struct {
