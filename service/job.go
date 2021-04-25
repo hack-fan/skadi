@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"strings"
 	"time"
 	"unicode/utf8"
 
@@ -272,4 +273,25 @@ func (s *Service) jobCallback(id string) {
 		s.log.Errorf("job %s callback failed: %s", id, err)
 		return
 	}
+}
+
+// JobAdd is different from JobPush, text contain agent name as first field.
+func (s *Service) JobAdd(uid, text, source, callback string) error {
+	args := strings.Fields(text)
+	name := args[0]
+	aid, ok, err := s.FindUserAgentByName(uid, name)
+	if err != nil {
+		return err
+	}
+	if !ok {
+		return xerr.Newf(404, "AgentNotFound", "请检查您提供的 Agent 名字是不是不对")
+	}
+	msg := strings.Join(args[1:], " ")
+	return s.JobPush(&types.JobInput{
+		UserID:   uid,
+		AgentID:  aid,
+		Message:  msg,
+		Source:   source,
+		Callback: callback,
+	})
 }
