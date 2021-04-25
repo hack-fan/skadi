@@ -284,7 +284,8 @@ func (s *Service) JobAdd(uid, text, source, callback string) error {
 		return err
 	}
 	if !ok {
-		return xerr.Newf(404, "AgentNotFound", "请检查您提供的 Agent 名字是不是不对")
+		return xerr.Newf(404, "AgentNotFound",
+			"agent %s not found, please check your agent name", name)
 	}
 	msg := strings.Join(args[1:], " ")
 	return s.JobPush(&types.JobInput{
