@@ -77,18 +77,23 @@ func main() {
 	e.Use(middleware.Recover())
 
 	// Auth group
-	var a = e.Group("", middleware.KeyAuth(s.AuthValidator))
+	var a = e.Group("/agent", middleware.KeyAuth(s.AuthValidator))
 
 	// Routes
 	e.GET("/status", getStatus)
 
-	a.GET("/agent/job", h.GetJob)
-	a.PUT("/agent/jobs/:id/succeed", h.PutJobSucceed)
-	a.PUT("/agent/jobs/:id/fail", h.PutJobFail)
-	a.PUT("/agent/jobs/:id/running", h.PutJobRunning)
-	a.POST("/agent/info", h.PostInfo)
-	a.POST("/agent/warning", h.PostWarning)
-	a.POST("/agent/kf", h.PostText)
+	a.GET("/job", h.GetJob)
+	a.PUT("/jobs/:id/succeed", h.PutJobSucceed)
+	a.PUT("/jobs/:id/fail", h.PutJobFail)
+	a.PUT("/jobs/:id/running", h.PutJobRunning)
+
+	a.POST("/info", h.PostInfo)
+	a.POST("/warning", h.PostWarning)
+	a.POST("/kf", h.PostText)
+	a.POST("/message/info", h.PostInfo)
+	a.POST("/message/warning", h.PostWarning)
+	a.POST("/message/text", h.PostText)
+	a.POST("/message/auto", h.PostAuto)
 
 	// Start server
 	go func() {

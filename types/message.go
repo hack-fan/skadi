@@ -9,6 +9,7 @@ const (
 	MessageTypeInfo    = "info"
 	MessageTypeWarning = "warning"
 	MessageTypeText    = "text"
+	MessageTypeAuto    = "auto"
 )
 
 // Message will send to IM, gen by agent api, or system event.
