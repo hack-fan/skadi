@@ -96,7 +96,7 @@ func (h *Handler) PostJobSelf(c echo.Context) error {
 	return c.NoContent(201)
 }
 
-func (h *Handler) PostJobOther(c echo.Context) error {
+func (h *Handler) PostJobAdd(c echo.Context) error {
 	aid := c.Get("aid").(string)
 	uid := c.Get("uid").(string)
 	req := new(types.MessageInput)
