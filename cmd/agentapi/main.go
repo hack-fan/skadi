@@ -113,3 +113,8 @@ func main() {
 	}
 	log.Warnf("Agent API graceful shutdown: %s", settings.Hostname)
 }
+
+// API status
+func getStatus(c echo.Context) error {
+	return c.NoContent(http.StatusNoContent)
+}
