@@ -16,8 +16,8 @@ const (
 	JobStatusFailed    = "failed"
 )
 
-var RESERVED = xtype.Strings{"agent", "status", "help", "delay", "group", "plan", "poster",
-	"link", "unlink", "follow", "unfollow"}
+var RESERVED = xtype.Strings{"agent", "delay", "status", "help", "delay", "group", "plan", "poster",
+	"link", "unlink", "follow", "unfollow", "sub", "unsub"}
 
 // JobBasic will be pulled by agent
 type JobBasic struct {
@@ -33,7 +33,7 @@ type JobInput struct {
 	Message string `json:"message" gorm:"type:varchar(255)" validate:"required,lte=255"`
 	// source context, any string defined by source
 	Source string `json:"source" gorm:"type:varchar(255)" validate:"omitempty,lte=255"`
-	// callback url, will be called after expired/succeeded/failed
+	// callback url, if exists, will be called after sent/expired/succeeded/failed
 	Callback string `json:"callback" gorm:"type:varchar(255)" validate:"omitempty,lte=255"`
 }
 
