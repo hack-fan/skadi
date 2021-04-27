@@ -127,7 +127,7 @@ func (s *Service) JobRunning(id string, message string) error {
 		return err
 	}
 	// callback
-	s.jobCallback(id)
+	go s.jobCallback(id)
 	return nil
 }
 
@@ -162,7 +162,7 @@ func (s *Service) JobSucceed(id string, result string) error {
 		return err
 	}
 	// callback
-	s.jobCallback(id)
+	go s.jobCallback(id)
 	return nil
 }
 
@@ -197,7 +197,7 @@ func (s *Service) JobFail(id string, result string) error {
 		return err
 	}
 	// callback
-	s.jobCallback(id)
+	go s.jobCallback(id)
 	return nil
 }
 
@@ -212,7 +212,7 @@ func (s *Service) JobExpire(id string) {
 		return
 	}
 	// callback
-	s.jobCallback(id)
+	go s.jobCallback(id)
 }
 
 // JobCancel Agent offline will cancel all job in queue
@@ -227,7 +227,7 @@ func (s *Service) JobCancel(id string) {
 		return
 	}
 	// callback
-	s.jobCallback(id)
+	go s.jobCallback(id)
 }
 
 // store async store a job to db
@@ -255,7 +255,7 @@ func (s *Service) jobSent(id string) {
 		s.log.Errorf("set job %s status to sent failed: %s", id, err)
 	}
 	// callback
-	s.jobCallback(id)
+	go s.jobCallback(id)
 }
 
 func (s *Service) jobCallback(id string) {
@@ -265,10 +265,11 @@ func (s *Service) jobCallback(id string) {
 		s.log.Errorf("job %s callback fetch job from db failed: %s", id, err)
 		return
 	}
-	if job.Callback == "" {
-		return
+	if job.Callback != "" {
+		_, err = s.rest.R().SetBody(job).Post(job.Callback)
+	} else {
+		_, err = s.evj.Pub(job)
 	}
-	_, err = s.rest.R().SetBody(job).Post(job.Callback)
 	if err != nil {
 		s.log.Errorf("job %s callback failed: %s", id, err)
 		return

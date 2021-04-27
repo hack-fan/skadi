@@ -8,7 +8,7 @@ require (
 	github.com/go-redis/redis/v8 v8.8.2
 	github.com/go-resty/resty/v2 v2.6.0
 	github.com/hack-fan/config v0.0.0-20200528030741-0a9be90586b6
-	github.com/hack-fan/jq v0.3.0 // indirect
+	github.com/hack-fan/jq v0.3.0
 	github.com/hack-fan/x/rdb v0.0.0-20210420061521-1e5bb3c0fb5a
 	github.com/hack-fan/x/xdb v0.0.0-20210420061521-1e5bb3c0fb5a
 	github.com/hack-fan/x/xecho v0.0.0-20210420061521-1e5bb3c0fb5a
@@ -24,7 +24,7 @@ require (
 	go.uber.org/zap v1.16.0
 	golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b // indirect
 	golang.org/x/net v0.0.0-20210423184538-5f58ad60dda6 // indirect
-	golang.org/x/sys v0.0.0-20210423185535-09eb48e85fd7 // indirect
+	golang.org/x/sys v0.0.0-20210426230700-d19ff857e887 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gorm.io/gorm v1.21.8

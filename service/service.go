@@ -19,6 +19,7 @@ type Service struct {
 	rest     *resty.Client
 	log      *zap.SugaredLogger
 	evm      *jq.Queue
+	evj      *jq.Queue
 	validate *validator.Validate
 }
 
@@ -31,6 +32,7 @@ func New(kv *redis.Client, db *gorm.DB, rest *resty.Client, log *zap.SugaredLogg
 		rest:     rest,
 		log:      log,
 		evm:      types.NewEventMessageQueue(kv),
+		evj:      types.NewEventJobStatusQueue(kv),
 		validate: validator.New(),
 	}
 	return s
