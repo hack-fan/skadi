@@ -30,6 +30,11 @@ You can easily run something on your server by sending message to IM.Slack, team
 +-------------+                                  +-----------------------+
 ```
 
+## Requirements
+
+* Redis 3.2+
+* MySQL
+
 ## Concepts
 
 ### Job
