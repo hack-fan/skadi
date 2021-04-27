@@ -43,6 +43,8 @@ github.com/google/go-cmp v0.5.5/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/
 github.com/google/renameio v0.1.0/go.mod h1:KWCgfxg9yswjAJkECMjeO8J8rahYeXnNhOm40UhjYkI=
 github.com/hack-fan/config v0.0.0-20200528030741-0a9be90586b6 h1:AoJN0N5BcQtK9JBPEFC+Qb06R6Hd6ML3VIVkYCdzknM=
 github.com/hack-fan/config v0.0.0-20200528030741-0a9be90586b6/go.mod h1:pNBw7sPcXydnQFm0YXMynTZdFqKXtFetAL2cy6DulLM=
+github.com/hack-fan/jq v0.3.0 h1:JyGpFe6abaP2LUqcZ3N49kWdphdh1U4Wqw+kkDqYCp8=
+github.com/hack-fan/jq v0.3.0/go.mod h1:QNxAbDZjWoXKvlCzkQI1Oc/zxFhi3lMPRWKeHiGkMJ4=
 github.com/hack-fan/x/rdb v0.0.0-20210416154040-e1d810fc2163 h1:J33rOp84QhpnboP/DaJZUA6gDukVu+X5hXQpuE9xhNg=
 github.com/hack-fan/x/rdb v0.0.0-20210416154040-e1d810fc2163/go.mod h1:lowUQv5NNU+a95bfDXTOTMv2mmGSfNk/n6STWb4nUhM=
 github.com/hack-fan/x/rdb v0.0.0-20210420061521-1e5bb3c0fb5a h1:+8e30IkLSt+K4hh+UdwSkvbCAqrtcrZzles5z1KzUjo=
@@ -194,6 +196,8 @@ golang.org/x/net v0.0.0-20210423184538-5f58ad60dda6/go.mod h1:OJAsFXCWl8Ukc7SiCT
 golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sync v0.0.0-20190423024810-112230192c58/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sync v0.0.0-20201020160332-67f06af15bc9/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
+golang.org/x/sync v0.0.0-20210220032951-036812b2e83c h1:5KslGYwFpkhGh+Q16bwMP3cOontH8FOep7tGV86Y7SQ=
+golang.org/x/sync v0.0.0-20210220032951-036812b2e83c/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sys v0.0.0-20180909124046-d0be0721c37e/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
 golang.org/x/sys v0.0.0-20190215142949-d0b11bdaac8a/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
 golang.org/x/sys v0.0.0-20190222072716-a9d3bda3a223/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=

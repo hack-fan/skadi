@@ -55,3 +55,12 @@ or write your own using our [HTTP API](https://letserver.run/ref/).
 
 All agent must check job every minute, if an agent has not checked job in `3 minute`,
 it's status would be tagged as `offline`. All queuing job for this agent would be tagged as `expired`.
+
+### Event
+
+There are several kinds of events, you must handle them.
+
+* EventMessage
+* EventJobStatus
+
+They will publish to a queue in redis.

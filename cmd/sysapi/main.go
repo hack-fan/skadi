@@ -8,7 +8,7 @@ import (
 
 	"github.com/go-resty/resty/v2"
 	"github.com/hack-fan/config"
-	"github.com/hack-fan/skadi/event"
+	"github.com/hack-fan/jq"
 	"github.com/hack-fan/x/rdb"
 	"github.com/hack-fan/x/xdb"
 	"github.com/hack-fan/x/xecho"
@@ -48,12 +48,11 @@ func main() {
 		SetRetryWaitTime(5 * time.Second).
 		SetRetryMaxWaitTime(60 * time.Second)
 
-	// default event center is just log the events
-	// if you have event worker, set it to redis in settings
-	var ev = event.NewEventCenter(log, settings.Event)
+	// events
+	var evm = jq.NewQueue("skadi:event:"+types.EventMessage, kv)
 
 	// service
-	var s = service.New(kv, db, rest, log, ev)
+	var s = service.New(kv, db, rest, log, evm)
 
 	// handler
 	var h = NewHandler(s)

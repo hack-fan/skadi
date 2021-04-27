@@ -28,7 +28,7 @@ func NewRedisEventCenter(kv *redis.Client, key string, log *zap.SugaredLogger) *
 	}
 }
 
-func (ec *RedisEventCenter) Pub(e *types.Event) error {
+func (ec *RedisEventCenter) Pub(e *types.Message) error {
 	data, err := msgpack.Marshal(e)
 	if err != nil {
 		return fmt.Errorf("marshal event failed: %w", err)
@@ -40,14 +40,14 @@ func (ec *RedisEventCenter) Pub(e *types.Event) error {
 	return nil
 }
 
-func (ec *RedisEventCenter) Get() (*types.Event, error) {
+func (ec *RedisEventCenter) Get() (*types.Message, error) {
 	data, err := ec.kv.RPop(ec.ctx, ec.key).Bytes()
 	if err == redis.Nil {
 		return nil, nil
 	} else if err != nil {
 		return nil, fmt.Errorf("get event from redis failed: %w", err)
 	}
-	var event = new(types.Event)
+	var event = new(types.Message)
 	err = msgpack.Unmarshal(data, event)
 	if err != nil {
 		return nil, fmt.Errorf("unmarshal event failed: %w", err)

@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/hack-fan/jq"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/xid"
 
@@ -13,10 +14,10 @@ import (
 
 type Handler struct {
 	s  *service.Service
-	ev types.EventCenter
+	ev *jq.Queue
 }
 
-func NewHandler(s *service.Service, ev types.EventCenter) *Handler {
+func NewHandler(s *service.Service, ev *jq.Queue) *Handler {
 	return &Handler{
 		s:  s,
 		ev: ev,
@@ -83,16 +84,16 @@ func (h *Handler) PutJobRunning(c echo.Context) error {
 func (h *Handler) PostInfo(c echo.Context) error {
 	aid := c.Get("aid").(string)
 	uid := c.Get("uid").(string)
-	input := new(types.EventInput)
+	input := new(types.MessageInput)
 	err := c.Bind(input)
 	if err != nil {
 		return err
 	}
-	err = h.ev.Pub(&types.Event{
+	_, err = h.ev.Pub(&types.Message{
 		ID:        xid.New().String(),
 		AgentID:   aid,
 		UserID:    uid,
-		Type:      types.EventTypeInfo,
+		Type:      types.MessageTypeInfo,
 		Message:   input.Message,
 		CreatedAt: time.Now(),
 	})
@@ -105,16 +106,16 @@ func (h *Handler) PostInfo(c echo.Context) error {
 func (h *Handler) PostWarning(c echo.Context) error {
 	aid := c.Get("aid").(string)
 	uid := c.Get("uid").(string)
-	input := new(types.EventInput)
+	input := new(types.MessageInput)
 	err := c.Bind(input)
 	if err != nil {
 		return err
 	}
-	err = h.ev.Pub(&types.Event{
+	_, err = h.ev.Pub(&types.Message{
 		ID:        xid.New().String(),
 		AgentID:   aid,
 		UserID:    uid,
-		Type:      types.EventTypeWarning,
+		Type:      types.MessageTypeWarning,
 		Message:   input.Message,
 		CreatedAt: time.Now(),
 	})
@@ -127,16 +128,16 @@ func (h *Handler) PostWarning(c echo.Context) error {
 func (h *Handler) PostText(c echo.Context) error {
 	aid := c.Get("aid").(string)
 	uid := c.Get("uid").(string)
-	input := new(types.EventInput)
+	input := new(types.MessageInput)
 	err := c.Bind(input)
 	if err != nil {
 		return err
 	}
-	err = h.ev.Pub(&types.Event{
+	_, err = h.ev.Pub(&types.Message{
 		ID:        xid.New().String(),
 		AgentID:   aid,
 		UserID:    uid,
-		Type:      types.EventTypeText,
+		Type:      types.MessageTypeText,
 		Message:   input.Message,
 		CreatedAt: time.Now(),
 	})

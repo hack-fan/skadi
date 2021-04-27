@@ -8,6 +8,7 @@ require (
 	github.com/go-redis/redis/v8 v8.8.2
 	github.com/go-resty/resty/v2 v2.6.0
 	github.com/hack-fan/config v0.0.0-20200528030741-0a9be90586b6
+	github.com/hack-fan/jq v0.3.0 // indirect
 	github.com/hack-fan/x/rdb v0.0.0-20210420061521-1e5bb3c0fb5a
 	github.com/hack-fan/x/xdb v0.0.0-20210420061521-1e5bb3c0fb5a
 	github.com/hack-fan/x/xecho v0.0.0-20210420061521-1e5bb3c0fb5a

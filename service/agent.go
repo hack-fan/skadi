@@ -118,11 +118,11 @@ func (s *Service) AgentOnline(aid, uid, ip string) {
 			s.log.Errorf("save agent %s ip to db failed: %s", aid, err)
 		}
 		// notify owner
-		err = s.ev.Pub(&types.Event{
+		_, err = s.evm.Pub(&types.Message{
 			ID:        xid.New().String(),
 			AgentID:   aid,
 			UserID:    uid,
-			Type:      types.EventTypeInfo,
+			Type:      types.MessageTypeInfo,
 			Message:   "Agent is online",
 			CreatedAt: time.Now(),
 		})
@@ -170,11 +170,11 @@ func (s *Service) AgentOffline(aid string) {
 		s.log.Errorf("agent offline error: %s", err)
 		return
 	}
-	err = s.ev.Pub(&types.Event{
+	_, err = s.evm.Pub(&types.Message{
 		ID:        xid.New().String(),
 		AgentID:   aid,
 		UserID:    agent.UserID,
-		Type:      types.EventTypeWarning,
+		Type:      types.MessageTypeWarning,
 		Message:   "Agent is offline",
 		CreatedAt: time.Now(),
 	})

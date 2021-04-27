@@ -16,12 +16,12 @@ func NewDefaultEventCenter(log *zap.SugaredLogger) *DefaultEventCenter {
 	return &DefaultEventCenter{log}
 }
 
-func (ec *DefaultEventCenter) Pub(e *types.Event) error {
+func (ec *DefaultEventCenter) Pub(e *types.Message) error {
 	ec.log.Infof("ignore event: %+v", e)
 	return nil
 }
 
-func (ec *DefaultEventCenter) Get() (*types.Event, error) {
+func (ec *DefaultEventCenter) Get() (*types.Message, error) {
 	return nil, nil
 }
 

@@ -6,7 +6,7 @@ import (
 	"github.com/go-playground/validator"
 	"github.com/go-redis/redis/v8"
 	"github.com/go-resty/resty/v2"
-	"github.com/hack-fan/skadi/types"
+	"github.com/hack-fan/jq"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
@@ -17,19 +17,19 @@ type Service struct {
 	db       *gorm.DB
 	rest     *resty.Client
 	log      *zap.SugaredLogger
-	ev       types.EventCenter
+	evm      *jq.Queue
 	validate *validator.Validate
 }
 
 // New create a job service instance
-func New(kv *redis.Client, db *gorm.DB, rest *resty.Client, log *zap.SugaredLogger, ev types.EventCenter) *Service {
+func New(kv *redis.Client, db *gorm.DB, rest *resty.Client, log *zap.SugaredLogger, evm *jq.Queue) *Service {
 	var s = &Service{
 		ctx:      context.Background(),
 		kv:       kv,
 		db:       db,
 		rest:     rest,
 		log:      log,
-		ev:       ev,
+		evm:      evm,
 		validate: validator.New(),
 	}
 	return s
