@@ -86,6 +86,8 @@ func main() {
 	a.PUT("/jobs/:id/succeed", h.PutJobSucceed)
 	a.PUT("/jobs/:id/fail", h.PutJobFail)
 	a.PUT("/jobs/:id/running", h.PutJobRunning)
+	a.POST("/job/self", h.PostJobSelf)
+	a.POST("/job/other", h.PostJobOther)
 
 	a.POST("/info", h.PostInfo)
 	a.POST("/warning", h.PostWarning)

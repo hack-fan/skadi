@@ -75,3 +75,38 @@ func (h *Handler) PutJobRunning(c echo.Context) error {
 	}
 	return c.NoContent(204)
 }
+
+func (h *Handler) PostJobSelf(c echo.Context) error {
+	aid := c.Get("aid").(string)
+	uid := c.Get("uid").(string)
+	req := new(types.MessageInput)
+	err := c.Bind(req)
+	if err != nil {
+		return err
+	}
+	err = h.s.JobPush(&types.JobInput{
+		UserID:  uid,
+		AgentID: aid,
+		Message: req.Message,
+		Source:  "self",
+	})
+	if err != nil {
+		return err
+	}
+	return c.NoContent(201)
+}
+
+func (h *Handler) PostJobOther(c echo.Context) error {
+	aid := c.Get("aid").(string)
+	uid := c.Get("uid").(string)
+	req := new(types.MessageInput)
+	err := c.Bind(req)
+	if err != nil {
+		return err
+	}
+	err = h.s.JobAdd(uid, req.Message, "agent:"+aid, "")
+	if err != nil {
+		return err
+	}
+	return c.NoContent(201)
+}
