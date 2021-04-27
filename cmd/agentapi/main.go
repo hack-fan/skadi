@@ -11,7 +11,6 @@ import (
 
 	"github.com/go-resty/resty/v2"
 	"github.com/hack-fan/config"
-	"github.com/hack-fan/jq"
 	"github.com/hack-fan/x/rdb"
 	"github.com/hack-fan/x/xdb"
 	"github.com/hack-fan/x/xecho"
@@ -52,14 +51,11 @@ func main() {
 		SetRetryWaitTime(5 * time.Second).
 		SetRetryMaxWaitTime(60 * time.Second)
 
-	// events
-	var evm = jq.NewQueue("skadi:event:"+types.EventMessage, kv)
-
 	// service
-	var s = service.New(kv, db, rest, log, evm)
+	var s = service.New(kv, db, rest, log)
 
 	// handler
-	var h = NewHandler(s, evm)
+	var h = NewHandler(s, types.NewEventMessageQueue(kv))
 
 	// Echo instance
 	e := echo.New()

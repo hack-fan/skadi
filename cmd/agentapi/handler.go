@@ -13,14 +13,14 @@ import (
 )
 
 type Handler struct {
-	s  *service.Service
-	ev *jq.Queue
+	s   *service.Service
+	evm *jq.Queue
 }
 
-func NewHandler(s *service.Service, ev *jq.Queue) *Handler {
+func NewHandler(s *service.Service, evm *jq.Queue) *Handler {
 	return &Handler{
-		s:  s,
-		ev: ev,
+		s:   s,
+		evm: evm,
 	}
 }
 
@@ -89,7 +89,7 @@ func (h *Handler) PostInfo(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	_, err = h.ev.Pub(&types.Message{
+	_, err = h.evm.Pub(&types.Message{
 		ID:        xid.New().String(),
 		AgentID:   aid,
 		UserID:    uid,
@@ -111,7 +111,7 @@ func (h *Handler) PostWarning(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	_, err = h.ev.Pub(&types.Message{
+	_, err = h.evm.Pub(&types.Message{
 		ID:        xid.New().String(),
 		AgentID:   aid,
 		UserID:    uid,
@@ -133,7 +133,7 @@ func (h *Handler) PostText(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	_, err = h.ev.Pub(&types.Message{
+	_, err = h.evm.Pub(&types.Message{
 		ID:        xid.New().String(),
 		AgentID:   aid,
 		UserID:    uid,
