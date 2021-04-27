@@ -53,6 +53,23 @@ type Job struct {
 	FailedAt    *time.Time `json:"failed_at,omitempty"`
 }
 
+// DelayedJob will be stored in db for future run.
+type DelayedJob struct {
+	ID string `json:"id" gorm:"type:varchar(20);primary_key"`
+	JobInput
+	ActiveAt  time.Time `json:"active_at"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+// DelayedJobInput just for api input
+type DelayedJobInput struct {
+	Message  string `json:"message" gorm:"type:varchar(255)" validate:"required,lte=255"`
+	Duration string
+	Minutes  int
+	Hours    int
+	Days     int
+}
+
 // JobResult is reported by agent
 // The length of result is not limited, if it longer than 1024, will be cut.
 type JobResult struct {
