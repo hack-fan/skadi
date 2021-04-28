@@ -55,6 +55,7 @@ func main() {
 	log.Info("start watching redis key expired event...")
 
 	log.Warnf("Skadi Watcher started: %s", settings.Hostname)
+	ticker := time.NewTicker(time.Minute)
 LOOP:
 	for {
 		select {
@@ -63,15 +64,19 @@ LOOP:
 			log.Debugw("redis key expired", "key", key)
 			if strings.HasPrefix(key, "job:wait:") {
 				jid := strings.TrimPrefix(key, "job:wait:")
-				go s.JobExpire(jid)
+				s.JobExpire(jid)
 			} else if strings.HasPrefix(key, "agent:online:") {
 				aid := strings.TrimPrefix(key, "agent:online:")
-				go s.AgentOffline(aid)
+				s.AgentOffline(aid)
 			}
+		case <-ticker.C:
+			s.DelayedJobCheck()
 		case <-ctx.Done():
 			stop()
 			break LOOP
 		}
 	}
+	// wait for async functions, 3s is enough.
+	time.Sleep(time.Second * 3)
 	log.Warnf("Skadi Watcher Stopped: %s", settings.Hostname)
 }

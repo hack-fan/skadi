@@ -47,3 +47,19 @@ func (s *Service) DelayedJobAdd(aid, uid string, job *types.DelayedJobInput) err
 	}
 	return nil
 }
+
+// DelayedJobCheck find job need to run, put the to cloud
+func (s *Service) DelayedJobCheck() {
+	var jobs = make([]types.DelayedJob, 0)
+	err := s.db.Find(&jobs, "active_at <= ?", time.Now()).Error
+	if err != nil {
+		s.log.Errorf("find delayed job from db failed: %s", err)
+		return
+	}
+	for _, job := range jobs {
+		err := s.JobPush(&job.JobInput)
+		if err != nil {
+			s.log.Errorf("failed put delayed job to cloud: %s", err)
+		}
+	}
+}
