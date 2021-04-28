@@ -33,10 +33,11 @@ func (s *Service) DelayedJobAdd(aid, uid string, job *types.DelayedJobInput) err
 	dj := &types.DelayedJob{
 		ID: xid.New().String(),
 		JobInput: types.JobInput{
-			UserID:  uid,
-			AgentID: aid,
-			Message: job.Message,
-			Source:  "delayed",
+			UserID:   uid,
+			AgentID:  aid,
+			Message:  job.Message,
+			Source:   "delayed",
+			Callback: job.Callback,
 		},
 		ActiveAt: time.Now().Add(du),
 	}

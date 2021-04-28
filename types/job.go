@@ -34,6 +34,8 @@ type JobInput struct {
 	// source context, any string defined by source
 	Source string `json:"source" gorm:"type:varchar(255)" validate:"omitempty,lte=255"`
 	// callback url, if exists, will be called after sent/expired/succeeded/failed
+	// left empty will notify in your default IM,
+	// set to "disable" will disable any notify or callback
 	Callback string `json:"callback" gorm:"type:varchar(255)" validate:"omitempty,lte=255"`
 }
 
@@ -63,11 +65,15 @@ type DelayedJob struct {
 
 // DelayedJobInput just for api input
 type DelayedJobInput struct {
-	Message  string `json:"message" gorm:"type:varchar(255)" validate:"required,lte=255"`
+	Message  string `validate:"required,lte=255"`
 	Duration string
 	Minutes  int
 	Hours    int
 	Days     int
+	// a url, will be called after job status changed,
+	// left empty will notify in your default IM,
+	// set to "disable" will disable any notify or callback
+	Callback string `validate:"omitempty,lte=255"`
 }
 
 // JobResult is reported by agent

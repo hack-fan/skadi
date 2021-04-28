@@ -265,7 +265,10 @@ func (s *Service) jobCallback(id string) {
 		s.log.Errorf("job %s callback fetch job from db failed: %s", id, err)
 		return
 	}
-	if job.Callback != "" {
+	if job.Callback == "disable" {
+		// disable callback and event
+		return
+	} else if job.Callback != "" {
 		_, err = s.rest.R().SetBody(job).Post(job.Callback)
 	} else {
 		_, err = s.evj.Pub(job)
