@@ -44,7 +44,7 @@ func main() {
 		db = db.Debug()
 	}
 	// auto create table
-	go db.AutoMigrate(&types.Job{}, &types.Agent{}) // nolint
+	go db.AutoMigrate(&types.Job{}, &types.Agent{}, &types.DelayedJob{}) // nolint
 
 	// http client
 	var rest = resty.New().SetRetryCount(3).
@@ -86,8 +86,8 @@ func main() {
 	a.PUT("/jobs/:id/succeed", h.PutJobSucceed)
 	a.PUT("/jobs/:id/fail", h.PutJobFail)
 	a.PUT("/jobs/:id/running", h.PutJobRunning)
-	// a.POST("/job/self", h.PostJobSelf)
 	a.POST("/job/add", h.PostJobAdd)
+	a.POST("/job/delayed", h.PostJobDelayed)
 
 	a.POST("/info", h.PostInfo)
 	a.POST("/warning", h.PostWarning)

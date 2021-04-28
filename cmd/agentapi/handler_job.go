@@ -110,3 +110,18 @@ func (h *Handler) PostJobAdd(c echo.Context) error {
 	}
 	return c.NoContent(201)
 }
+
+func (h *Handler) PostJobDelayed(c echo.Context) error {
+	aid := c.Get("aid").(string)
+	uid := c.Get("uid").(string)
+	req := new(types.DelayedJobInput)
+	err := c.Bind(req)
+	if err != nil {
+		return err
+	}
+	err = h.s.DelayedJobAdd(aid, uid, req)
+	if err != nil {
+		return err
+	}
+	return c.NoContent(201)
+}
