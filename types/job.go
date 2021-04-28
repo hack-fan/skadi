@@ -65,15 +65,15 @@ type DelayedJob struct {
 
 // DelayedJobInput just for api input
 type DelayedJobInput struct {
-	Message  string `validate:"required,lte=255"`
-	Duration string
-	Minutes  int
-	Hours    int
-	Days     int
+	Message  string `validate:"required,lte=255" json:"message"`
+	Duration string `json:"duration,omitempty"`
+	Minutes  int    `json:"minutes,omitempty"`
+	Hours    int    `json:"hours,omitempty"`
+	Days     int    `json:"days,omitempty"`
 	// a url, will be called after job status changed,
 	// left empty will notify in your default IM,
 	// set to "disable" will disable any notify or callback
-	Callback string `validate:"omitempty,lte=255"`
+	Callback string `validate:"omitempty,lte=255" json:"callback,omitempty"`
 }
 
 // JobResult is reported by agent
