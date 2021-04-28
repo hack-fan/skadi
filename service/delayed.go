@@ -60,6 +60,11 @@ func (s *Service) DelayedJobCheck() {
 		err := s.JobPush(&job.JobInput)
 		if err != nil {
 			s.log.Errorf("failed put delayed job to cloud: %s", err)
+			continue
+		}
+		err = s.db.Delete(&job).Error
+		if err != nil {
+			s.log.Errorf("failed to delete delayed job in db: %s", err)
 		}
 	}
 }
