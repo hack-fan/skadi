@@ -6,9 +6,9 @@ import "time"
 type Agent struct {
 	ID     string `json:"id" gorm:"type:varchar(20);primary_key"`
 	Secret string `json:"-" gorm:"type:varchar(20);index"`
-	UserID string `json:"user_id" gorm:"type:varchar(20);index:idx_uid;uniqueIndex:idx_un1;uniqueIndex:idx_un2"`
+	UserID string `json:"user_id" gorm:"type:varchar(20);index:idx_uid;uniqueIndex:idx_un1;index:idx_un2"`
 	Name   string `json:"name" gorm:"type:varchar(50);uniqueIndex:idx_un1"`
-	Alias  string `json:"alias" gorm:"type:varchar(50);uniqueIndex:idx_un2"`
+	Alias  string `json:"alias" gorm:"type:varchar(50);index:idx_un2"`
 	Remark string `json:"remark"`
 	// IP address last connected from
 	IP string `json:"ip" gorm:"type:varchar(50)"`
