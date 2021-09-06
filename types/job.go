@@ -70,14 +70,14 @@ type DelayedJobInput struct {
 	Minutes  int    `json:"minutes,omitempty"`
 	Hours    int    `json:"hours,omitempty"`
 	Days     int    `json:"days,omitempty"`
-	// a url, will be called after job status changed,
+	// an url, will be called after job status changed,
 	// left empty will notify in your default IM,
 	// set to "disable" will disable any notify or callback
 	Callback string `validate:"omitempty,lte=255" json:"callback,omitempty"`
 }
 
 // JobResult is reported by agent
-// The length of result is not limited, if it longer than 1024, will be cut.
+// The length of result is not limited, if it is longer than 1024, will be cut.
 type JobResult struct {
 	// agent returned, job log or other message
 	Result string `json:"result,omitempty"`
