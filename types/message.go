@@ -1,7 +1,6 @@
 package types
 
 import (
-	"context"
 	"time"
 )
 
@@ -24,16 +23,4 @@ type Message struct {
 
 type MessageInput struct {
 	Message string `json:"message"`
-}
-
-// EventHandler handle the event, and please handle the error yourself.
-type EventHandler func(e *Message)
-
-type EventCenter interface {
-	// Pub publish a event to a queue or pool
-	Pub(e *Message) error
-	// Get a event, nil if no event found
-	Get() (*Message, error)
-	// StartWorker to check and get new event periodically in background
-	StartWorker(ctx context.Context, handler EventHandler)
 }
