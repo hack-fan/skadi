@@ -12,6 +12,7 @@ const (
 )
 
 // Message will send to IM, gen by agent api, or system event.
+// Not stored in the database.
 type Message struct {
 	ID        string    `json:"id"`
 	AgentID   string    `json:"agent_id"`
