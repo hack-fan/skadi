@@ -41,7 +41,7 @@ type JobInput struct {
 
 // Job will be saved in db, it's a gorm mysql model
 type Job struct {
-	ID string `json:"id" gorm:"type:varchar(20);primary_key"`
+	ID string `json:"id" gorm:"type:varchar(20);primaryKey"`
 	JobInput
 	// queuing/canceled/sent/expired/succeeded/failed
 	Status string `json:"status" gorm:"type:varchar(10)"`
@@ -57,7 +57,7 @@ type Job struct {
 
 // DelayedJob will be stored in db for future run.
 type DelayedJob struct {
-	ID string `json:"id" gorm:"type:varchar(20);primary_key"`
+	ID string `json:"id" gorm:"type:varchar(20);primaryKey"`
 	JobInput
 	ActiveAt  time.Time `json:"active_at"`
 	CreatedAt time.Time `json:"created_at"`
