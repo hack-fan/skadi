@@ -82,3 +82,8 @@ type JobResult struct {
 	// agent returned, job log or other message
 	Result string `json:"result,omitempty"`
 }
+
+// JobRaw is raw input of job, format: AgentName JobMessage
+type JobRaw struct {
+	Message string `json:"message"`
+}

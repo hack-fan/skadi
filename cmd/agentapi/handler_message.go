@@ -16,13 +16,14 @@ func (h *Handler) PostInfo(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+	input.Type = types.MessageTypeInfo
+	input.Level = types.MessageLevelInfo
 	_, err = h.evm.Pub(&types.Message{
-		ID:        xid.New().String(),
-		AgentID:   aid,
-		UserID:    uid,
-		Type:      types.MessageTypeInfo,
-		Message:   input.Message,
-		CreatedAt: time.Now(),
+		ID:           xid.New().String(),
+		AgentID:      aid,
+		UserID:       uid,
+		MessageInput: *input,
+		CreatedAt:    time.Now(),
 	})
 	if err != nil {
 		return err
@@ -38,13 +39,14 @@ func (h *Handler) PostWarning(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+	input.Type = types.MessageTypeWarning
+	input.Level = types.MessageLevelWarning
 	_, err = h.evm.Pub(&types.Message{
-		ID:        xid.New().String(),
-		AgentID:   aid,
-		UserID:    uid,
-		Type:      types.MessageTypeWarning,
-		Message:   input.Message,
-		CreatedAt: time.Now(),
+		ID:           xid.New().String(),
+		AgentID:      aid,
+		UserID:       uid,
+		MessageInput: *input,
+		CreatedAt:    time.Now(),
 	})
 	if err != nil {
 		return err
@@ -60,13 +62,14 @@ func (h *Handler) PostText(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+	input.Type = types.MessageTypeText
+	input.Level = types.MessageLevelInfo
 	_, err = h.evm.Pub(&types.Message{
-		ID:        xid.New().String(),
-		AgentID:   aid,
-		UserID:    uid,
-		Type:      types.MessageTypeText,
-		Message:   input.Message,
-		CreatedAt: time.Now(),
+		ID:           xid.New().String(),
+		AgentID:      aid,
+		UserID:       uid,
+		MessageInput: *input,
+		CreatedAt:    time.Now(),
 	})
 	if err != nil {
 		return err
@@ -82,13 +85,14 @@ func (h *Handler) PostAuto(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+	input.Type = types.MessageTypeAuto
+	input.Level = types.MessageLevelInfo
 	_, err = h.evm.Pub(&types.Message{
-		ID:        xid.New().String(),
-		AgentID:   aid,
-		UserID:    uid,
-		Type:      types.MessageTypeAuto,
-		Message:   input.Message,
-		CreatedAt: time.Now(),
+		ID:           xid.New().String(),
+		AgentID:      aid,
+		UserID:       uid,
+		MessageInput: *input,
+		CreatedAt:    time.Now(),
 	})
 	if err != nil {
 		return err

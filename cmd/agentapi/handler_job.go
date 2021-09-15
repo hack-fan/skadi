@@ -79,7 +79,7 @@ func (h *Handler) PutJobRunning(c echo.Context) error {
 func (h *Handler) PostJobAdd(c echo.Context) error {
 	aid := c.Get("aid").(string)
 	uid := c.Get("uid").(string)
-	req := new(types.MessageInput)
+	req := new(types.JobRaw)
 	err := c.Bind(req)
 	if err != nil {
 		return err
