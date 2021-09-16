@@ -19,10 +19,10 @@ require (
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/rs/xid v1.3.0
 	github.com/vmihailenco/msgpack/v5 v5.3.4
-	go.uber.org/zap v1.19.0
+	go.uber.org/zap v1.19.1
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gorm.io/gorm v1.21.14
+	gorm.io/gorm v1.21.15
 )
 
 require (

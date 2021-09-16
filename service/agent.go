@@ -119,11 +119,14 @@ func (s *Service) AgentOnline(aid, uid, ip string) {
 		}
 		// notify owner
 		_, err = s.evm.Pub(&types.Message{
-			ID:        xid.New().String(),
-			AgentID:   aid,
-			UserID:    uid,
-			Type:      types.MessageTypeInfo,
-			Message:   "Agent is online",
+			ID:      xid.New().String(),
+			AgentID: aid,
+			UserID:  uid,
+			MessageInput: types.MessageInput{
+				Type:    types.MessageTypeText,
+				Level:   types.MessageLevelInfo,
+				Message: "Agent is online",
+			},
 			CreatedAt: time.Now(),
 		})
 		if err != nil {
@@ -171,11 +174,14 @@ func (s *Service) AgentOffline(aid string) {
 		return
 	}
 	_, err = s.evm.Pub(&types.Message{
-		ID:        xid.New().String(),
-		AgentID:   aid,
-		UserID:    agent.UserID,
-		Type:      types.MessageTypeWarning,
-		Message:   "Agent is offline",
+		ID:      xid.New().String(),
+		AgentID: aid,
+		UserID:  agent.UserID,
+		MessageInput: types.MessageInput{
+			Type:    types.MessageTypeText,
+			Level:   types.MessageLevelInfo,
+			Message: "Agent is online",
+		},
 		CreatedAt: time.Now(),
 	})
 	if err != nil {
