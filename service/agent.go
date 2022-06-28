@@ -123,7 +123,7 @@ func (s *Service) AgentOnline(aid, uid, ip string) {
 			AgentID: aid,
 			UserID:  uid,
 			MessageInput: types.MessageInput{
-				Type:    types.MessageTypeText,
+				Type:    types.MessageTypeAuto,
 				Level:   types.MessageLevelInfo,
 				Message: "Agent is online",
 			},
@@ -178,7 +178,7 @@ func (s *Service) AgentOffline(aid string) {
 		AgentID: aid,
 		UserID:  agent.UserID,
 		MessageInput: types.MessageInput{
-			Type:    types.MessageTypeText,
+			Type:    types.MessageTypeAuto,
 			Level:   types.MessageLevelInfo,
 			Message: "Agent is online",
 		},

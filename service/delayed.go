@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/hack-fan/skadi/types"
 	"github.com/hack-fan/x/xerr"
 	"github.com/rs/xid"
+
+	"github.com/hack-fan/skadi/types"
 )
 
 func (s *Service) DelayedJobAdd(aid, uid string, job *types.DelayedJobInput) error {
@@ -48,7 +49,7 @@ func (s *Service) DelayedJobAdd(aid, uid string, job *types.DelayedJobInput) err
 	return nil
 }
 
-// DelayedJobCheck find job need to run, put the to cloud
+// DelayedJobCheck find jobs need to run, put the to cloud
 func (s *Service) DelayedJobCheck() {
 	var jobs = make([]types.DelayedJob, 0)
 	err := s.db.Find(&jobs, "active_at <= ?", time.Now()).Error
