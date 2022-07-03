@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/go-redis/redis/v8"
+	"github.com/hack-fan/x/xerr"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 
@@ -39,6 +40,11 @@ func (s *Service) AuthValidator(key string, c echo.Context) (bool, error) {
 		} else if err != nil {
 			return false, fmt.Errorf("err read key from db: %w", err)
 		}
+		// unavailable
+		if !agent.Available {
+			return false, xerr.New(400, "UnavailableAgent", "agent not available")
+		}
+		// ok
 		aid = agent.ID
 		uid = agent.UserID
 		// save in redis

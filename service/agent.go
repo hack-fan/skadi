@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"time"
@@ -249,4 +250,34 @@ func (s *Service) AgentDelete(aid string) error {
 		return fmt.Errorf("remove agent failed: %w", err)
 	}
 	return nil
+}
+
+func (s *Service) AgentAvailable(aid string) {
+	err := s.db.Model(&types.Agent{}).Where("id = ?", aid).Update("available", true).Error
+	if err != nil {
+		s.log.Errorf("update agent available failed: %s", err)
+	}
+}
+
+func (s *Service) AgentUnavailable(aid string) {
+	// find
+	agent, err := s.FindAgent(aid)
+	if err != nil {
+		s.log.Errorf("find agent %s failed when unavailable it: %s", aid, err)
+		return
+	}
+	// db
+	err = s.db.Model(&types.Agent{}).Where("id = ?", aid).Update("available", false).Error
+	if err != nil {
+		s.log.Errorf("update agent %s unavailable failed: %s", aid, err)
+		return
+	}
+	// secret
+	s.clearAgentAuthCache(agent.Secret)
+	// jobs & online status
+	err = s.kv.Del(context.Background(), agentQueueKey(aid), agentOnlineKey(aid)).Err()
+	if !errors.Is(err, redis.Nil) && err != nil {
+		s.log.Errorf("delete agent %s jobs and online status when unavailable failed: %s", aid, err)
+		return
+	}
 }
