@@ -3,7 +3,7 @@
 package main
 
 import (
-	"io/ioutil"
+	"io"
 	"time"
 
 	"github.com/go-resty/resty/v2"
@@ -63,7 +63,7 @@ func main() {
 	// Error handler
 	e.HTTPErrorHandler = xecho.NewErrorHandler(logger)
 	// Disable echo logs, error handler above will log the error
-	e.Logger.SetOutput(ioutil.Discard)
+	e.Logger.SetOutput(io.Discard)
 	// Middleware
 	e.Use(xecho.ZapLogger(logger))
 	e.Use(middleware.Recover())

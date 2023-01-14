@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"os/signal"
@@ -67,7 +67,7 @@ func main() {
 	// Error handler
 	e.HTTPErrorHandler = xecho.NewErrorHandler(logger)
 	// Disable echo logs, error handler above will log the error
-	e.Logger.SetOutput(ioutil.Discard)
+	e.Logger.SetOutput(io.Discard)
 	// Middleware
 	e.Use(xecho.ZapLoggerWithSkipper(logger, xecho.NewSkipper([]xecho.SkipRule{
 		{Method: http.MethodGet, Path: "/status", StatusCode: 204},

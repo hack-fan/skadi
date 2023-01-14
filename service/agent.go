@@ -119,6 +119,11 @@ func (s *Service) AgentOnline(aid, uid, ip string) {
 			s.log.Errorf("save agent %s ip to db failed: %s", aid, err)
 		}
 		// notify owner
+		agent, err := s.FindAgent(aid)
+		if err != nil {
+			s.log.Errorf("agent online error: %s", err)
+			return
+		}
 		_, err = s.evm.Pub(&types.Message{
 			ID:      xid.New().String(),
 			AgentID: aid,
@@ -126,7 +131,7 @@ func (s *Service) AgentOnline(aid, uid, ip string) {
 			MessageInput: types.MessageInput{
 				Type:    types.MessageTypeAuto,
 				Level:   types.MessageLevelInfo,
-				Message: "Agent is online",
+				Message: fmt.Sprintf("Agent %s is online", agent.Name),
 			},
 			CreatedAt: time.Now(),
 		})
@@ -181,7 +186,7 @@ func (s *Service) AgentOffline(aid string) {
 		MessageInput: types.MessageInput{
 			Type:    types.MessageTypeAuto,
 			Level:   types.MessageLevelInfo,
-			Message: "Agent is online",
+			Message: fmt.Sprintf("Agent %s is offline", agent.Name),
 		},
 		CreatedAt: time.Now(),
 	})
