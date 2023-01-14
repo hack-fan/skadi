@@ -15,7 +15,7 @@ require (
 	github.com/hack-fan/x/xlog v0.0.0-20220703034919-4a44c162d503
 	github.com/hack-fan/x/xtype v0.0.0-20220703034919-4a44c162d503
 	github.com/iancoleman/strcase v0.2.0 // indirect
-	github.com/labstack/echo/v4 v4.7.2
+	github.com/labstack/echo/v4 v4.9.0
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/rs/xid v1.4.0
 	github.com/vmihailenco/msgpack/v5 v5.3.5
