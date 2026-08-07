@@ -23,7 +23,7 @@ require (
 
 require (
 	github.com/go-playground/validator/v10 v10.30.3
-	github.com/redis/go-redis/v9 v9.21.0
+	github.com/redis/go-redis/v9 v9.22.0
 )
 
 require (
