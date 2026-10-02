@@ -12,7 +12,7 @@ require (
 	github.com/hack-fan/x/xerr v0.0.3
 	github.com/hack-fan/x/xlog v0.0.3
 	github.com/iancoleman/strcase v0.3.0 // indirect
-	github.com/labstack/echo/v4 v4.15.4
+	github.com/labstack/echo/v4 v4.16.0
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/rs/xid v1.6.0
 	github.com/vmihailenco/msgpack/v5 v5.4.1
